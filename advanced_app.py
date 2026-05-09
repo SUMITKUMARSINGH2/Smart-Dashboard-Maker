@@ -10,6 +10,7 @@ from modules.timeseries import timeseries_page
 from modules.export import export_page
 from modules.ml_insights import ml_insights_page
 from modules.nlq import nlq_page
+from modules.live_feed import live_feed_page
 from modules.privacy import privacy_page
 from modules.terms import terms_page
 from modules.cookies import cookies_page
@@ -367,6 +368,7 @@ _MAIN_PAGES = [
     ("⏱", "Time Series"),
     ("◈", "ML Insights"),
     ("◐", "Ask Your Data"),
+    ("⟳", "Live Data Feed"),
     ("↓", "Export & Reports"),
 ]
 _LEGAL_PAGES = [
@@ -490,6 +492,7 @@ _ROUTES = {
     "Time Series":      timeseries_page,
     "ML Insights":      ml_insights_page,
     "Ask Your Data":    nlq_page,
+    "Live Data Feed":   live_feed_page,
     "Export & Reports": export_page,
     "Privacy Policy":   privacy_page,
     "Terms of Service": terms_page,
