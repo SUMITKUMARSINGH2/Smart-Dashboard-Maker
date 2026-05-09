@@ -23,16 +23,76 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+/* Load both Inter AND Material Icons so Streamlit icon glyphs render correctly */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Sharp');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 /* ═══ GLOBAL ═══════════════════════════════════════════════════════════════ */
-*, html, body, [class*="css"] {
+html, body, [class*="css"],
+*:not(.material-icons):not(.material-icons-sharp):not(.material-icons-round):not(.material-symbols-rounded):not(.material-symbols-sharp):not(.material-symbols-outlined) {
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+/* Restore Material Icons font so Streamlit icon glyphs render as icons not text */
+.material-icons,
+.material-icons-sharp,
+.material-icons-round,
+.material-icons-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp,
+.material-symbols-outlined {
+    font-family: 'Material Icons', 'Material Icons Sharp', 'Material Icons Round',
+                 'Material Symbols Rounded', 'Material Symbols Sharp' !important;
+    font-size: 20px !important;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
 }
 
 /* ═══ APP SHELL ════════════════════════════════════════════════════════════ */
 [data-testid="stAppViewContainer"] > .main { background: #F8FAFC; }
 .main .block-container { padding: 1.5rem 2rem 3rem; max-width: 1400px; }
+
+/* ═══ SIDEBAR TOGGLE — hide raw icon text, replace with Unicode arrows ═════ */
+/* Collapse button (sidebar open → click to close) */
+[data-testid="stSidebarCollapseButton"] button span,
+[data-testid="stSidebarCollapseButton"] button p,
+[data-testid="stSidebarCollapseButton"] span,
+/* Expand button (sidebar collapsed → click to open) */
+[data-testid="stSidebarCollapsedControl"] button span,
+[data-testid="stSidebarCollapsedControl"] button p,
+[data-testid="stSidebarCollapsedControl"] span,
+/* Generic header icon buttons */
+button[data-testid="stBaseButton-headerNoPadding"] span,
+button[data-testid="stBaseButton-header"] span {
+    font-size: 0 !important;
+    color: transparent !important;
+    visibility: hidden !important;
+}
+/* Re-inject a clean Unicode arrow via pseudo-element */
+[data-testid="stSidebarCollapseButton"] button::after {
+    content: '‹';
+    font-size: 1.25rem;
+    color: #6B7280;
+    visibility: visible !important;
+    line-height: 1;
+}
+[data-testid="stSidebarCollapsedControl"] button::after {
+    content: '›';
+    font-size: 1.25rem;
+    color: #6B7280;
+    visibility: visible !important;
+    line-height: 1;
+}
 
 /* ═══ SIDEBAR ══════════════════════════════════════════════════════════════ */
 [data-testid="stSidebar"] {
