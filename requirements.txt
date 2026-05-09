@@ -64,3 +64,4 @@ scipy
 seaborn
 xlsxwriter
 scikit-learn
+statsmodels
