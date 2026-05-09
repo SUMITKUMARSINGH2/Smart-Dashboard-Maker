@@ -11,6 +11,7 @@ from modules.export import export_page
 from modules.ml_insights import ml_insights_page
 from modules.nlq import nlq_page
 from modules.live_feed import live_feed_page
+from modules.annotations import annotations_page
 from modules.privacy import privacy_page
 from modules.terms import terms_page
 from modules.cookies import cookies_page
@@ -348,6 +349,31 @@ div[data-testid="stMetricDelta"] { font-size: .78rem !important; }
 
 /* ═══ FIX PLOTLY CHART BACKGROUNDS ══════════════════════════════════════════ */
 .js-plotly-plot .plotly .bg { fill: transparent !important; }
+
+/* ═══ DARK TOP HEADER BAR ════════════════════════════════════════════════════ */
+header[data-testid="stHeader"] {
+    background: #060B1A !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+[data-testid="stToolbar"] {
+    background: #060B1A !important;
+}
+[data-testid="stDecoration"] { display: none !important; }
+[data-testid="stHeader"] > div:first-child {
+    background: #060B1A !important;
+}
+button[data-testid="baseButton-header"],
+button[kind="header"] {
+    background: transparent !important;
+    color: #64748B !important;
+}
+button[data-testid="baseButton-header"]:hover,
+button[kind="header"]:hover {
+    background: rgba(255,255,255,0.05) !important;
+    color: #E2E8F0 !important;
+}
+[data-testid="stStatusWidget"] { display: none !important; }
+.stDeployButton { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -369,6 +395,7 @@ _MAIN_PAGES = [
     ("◈", "ML Insights"),
     ("◐", "Ask Your Data"),
     ("⟳", "Live Data Feed"),
+    ("✎", "Annotations"),
     ("↓", "Export & Reports"),
 ]
 _LEGAL_PAGES = [
@@ -493,6 +520,7 @@ _ROUTES = {
     "ML Insights":      ml_insights_page,
     "Ask Your Data":    nlq_page,
     "Live Data Feed":   live_feed_page,
+    "Annotations":      annotations_page,
     "Export & Reports": export_page,
     "Privacy Policy":   privacy_page,
     "Terms of Service": terms_page,
