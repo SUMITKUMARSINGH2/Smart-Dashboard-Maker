@@ -2,87 +2,107 @@ import streamlit as st
 
 
 def home_page():
+    # ── Hero ──────────────────────────────────────────────────────────────
     st.markdown("""
-    <div style='background:linear-gradient(135deg,#0F172A 0%,#1E3A5F 60%,#0EA5E9 100%);
-                border-radius:14px;padding:2.5rem 2.8rem;margin-bottom:2rem;'>
-        <div style='display:flex;align-items:flex-start;gap:1.5rem;'>
-            <div style='flex:1;'>
-                <div style='color:#0EA5E9;font-size:0.75rem;font-weight:600;text-transform:uppercase;
-                            letter-spacing:.1em;margin-bottom:.6rem;'>Professional Data Analytics</div>
-                <h1 style='color:#F8FAFC;margin:0;font-size:2.2rem;font-weight:800;line-height:1.2;'>
-                    Turn Raw Data Into<br>Actionable Insights
-                </h1>
-                <p style='color:#94A3B8;margin:0.8rem 0 0;font-size:1rem;line-height:1.6;max-width:500px;'>
-                    Upload any dataset, clean it, explore patterns with Seaborn & Plotly,
-                    build interactive charts, and export to HTML, Excel, or Power BI — all without writing code.
-                </p>
-                <div style='display:flex;gap:0.7rem;margin-top:1.4rem;flex-wrap:wrap;'>
-                    <span style='background:rgba(14,165,233,0.2);color:#38BDF8;border:1px solid rgba(14,165,233,0.3);
-                                 border-radius:20px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:500;'>CSV &amp; Excel</span>
-                    <span style='background:rgba(245,158,11,0.2);color:#FCD34D;border:1px solid rgba(245,158,11,0.3);
-                                 border-radius:20px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:500;'>JSON &amp; Parquet</span>
-                    <span style='background:rgba(16,185,129,0.2);color:#6EE7B7;border:1px solid rgba(16,185,129,0.3);
-                                 border-radius:20px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:500;'>Power BI Export</span>
-                    <span style='background:rgba(139,92,246,0.2);color:#C4B5FD;border:1px solid rgba(139,92,246,0.3);
-                                 border-radius:20px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:500;'>Copy Chart Code</span>
-                </div>
+    <div style='display:flex;gap:2rem;align-items:center;
+                background:#FFFFFF;border-radius:20px;padding:2.5rem 3rem;
+                margin-bottom:2rem;border:1px solid #EDE9FE;
+                box-shadow:0 4px 24px rgba(124,58,237,.08);'>
+        <div style='flex:1;'>
+            <div style='font-size:.72rem;font-weight:800;letter-spacing:.12em;
+                        text-transform:uppercase;color:#7C3AED;margin-bottom:.6rem;'>
+                Professional Data Analytics
             </div>
-            <div style='font-size:6rem;opacity:0.15;user-select:none;'>📊</div>
-        </div>
+            <h1 style='font-size:2.4rem;font-weight:800;color:#1C1917;
+                       line-height:1.15;margin:0 0 .9rem;'>
+                From Raw Data<br>
+                <span style='background:linear-gradient(135deg,#7C3AED,#F43F5E);
+                             -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
+                to Real Insights
+                </span>
+            </h1>
+            <p style='color:#6B7280;font-size:.95rem;line-height:1.65;
+                      max-width:520px;margin:0 0 1.4rem;'>
+                Upload CSV, Excel, JSON or Parquet · Profile &amp; clean your data ·
+                Build interactive charts with Seaborn &amp; Plotly ·
+                Run ML clustering and anomaly detection · Export to HTML, Excel or Power BI.
+            </p>
+            <div style='display:flex;gap:.6rem;flex-wrap:wrap;'>
+    """, unsafe_allow_html=True)
+
+    badges = [
+        ("#7C3AED", "#EDE9FE", "4+ File Formats"),
+        ("#F43F5E", "#FFF1F2", "19+ Chart Types"),
+        ("#059669", "#ECFDF5", "Power BI Export"),
+        ("#D97706", "#FFFBEB", "Copy Chart Code"),
+        ("#0EA5E9", "#F0F9FF",  "ML Clustering"),
+    ]
+    tags = "".join(f"""<span style='background:{bg};color:{fg};border-radius:20px;
+                       padding:.3rem .85rem;font-size:.75rem;font-weight:700;'>{label}</span>"""
+                   for fg, bg, label in badges)
+    st.markdown(tags + "</div></div>", unsafe_allow_html=True)
+
+    # right side big number cluster
+    st.markdown("""
+        <div style='display:grid;grid-template-columns:1fr 1fr;gap:1rem;min-width:240px;'>
+    """, unsafe_allow_html=True)
+    nums = [
+        ("#7C3AED","#F5F3FF","19+","Chart Types"),
+        ("#F43F5E","#FFF1F2","8+","Clean Tools"),
+        ("#059669","#ECFDF5","4","Export Formats"),
+        ("#D97706","#FFFBEB","ML","Insights"),
+    ]
+    for fg, bg, val, lbl in nums:
+        st.markdown(f"""
+        <div style='background:{bg};border-radius:14px;padding:1rem 1.2rem;text-align:center;'>
+            <div style='font-size:1.8rem;font-weight:800;color:{fg};'>{val}</div>
+            <div style='font-size:.72rem;font-weight:700;color:{fg};opacity:.8;margin-top:2px;'>{lbl}</div>
+        </div>""", unsafe_allow_html=True)
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+    # ── Feature grid ─────────────────────────────────────────────────────
+    st.markdown("""
+    <div style='margin:2rem 0 .8rem;'>
+        <div style='font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+                    color:#7C3AED;'>What's inside</div>
+        <h2 style='font-size:1.4rem;font-weight:800;color:#1C1917;margin:.3rem 0 0;'>
+            Ten powerful modules
+        </h2>
+        <div style='width:40px;height:3px;background:linear-gradient(90deg,#7C3AED,#F43F5E);
+                    border-radius:2px;margin:.6rem 0;'></div>
     </div>
     """, unsafe_allow_html=True)
 
-    cols = st.columns(4)
-    stats = [
-        ("#0EA5E9", "4+", "File Formats", "CSV, Excel, JSON, Parquet"),
-        ("#F59E0B", "19+", "Chart Types", "Bar, Scatter, Treemap, Sankey…"),
-        ("#10B981", "8+", "Cleaning Tools", "Outlier detection, imputation…"),
-        ("#8B5CF6", "3", "Export Targets", "HTML, Excel, Power BI"),
-    ]
-    for col, (color, val, label, sub) in zip(cols, stats):
-        col.markdown(f"""
-        <div class="stat-card" style="border-top-color:{color};">
-            <div style="font-size:2rem;font-weight:800;color:{color};line-height:1">{val}</div>
-            <div style="font-weight:600;color:#0F172A;margin-top:6px;font-size:0.9rem">{label}</div>
-            <div style="color:#94A3B8;font-size:0.76rem;margin-top:3px">{sub}</div>
-        </div>""", unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<div class='page-header'><h2>What You Can Do</h2><p>Eight powerful modules, zero code required</p></div>", unsafe_allow_html=True)
-
     features = [
-        ("#0EA5E9", "Upload Data",       "Drop a CSV, Excel, JSON or Parquet file. Auto-detects types, previews rows, shows quick stats."),
-        ("#F59E0B", "Data Profiling",    "Per-column stats: missing %, skewness, kurtosis, unique counts, memory. Missing-value bar chart."),
-        ("#EF4444", "Data Cleaning",     "Remove duplicates, fill nulls (mean/median/mode/interpolate), detect and remove outliers via IQR or Z-Score."),
-        ("#10B981", "EDA & Statistics",  "Seaborn correlation heatmaps, distribution plots, pair plots, and hypothesis tests (t-test, ANOVA, Chi-square)."),
-        ("#8B5CF6", "Chart Builder",     "19 Plotly chart types — bar, scatter, treemap, sunburst, violin, funnel and more. Copy the Python code for any chart."),
-        ("#0EA5E9", "Auto Dashboard",    "One click generates KPI cards, correlation matrix, distribution charts, and pivot heatmaps automatically."),
-        ("#F59E0B", "Time Series",       "Auto-detect date columns, trend lines, rolling averages, periodicity breakdowns, and growth rate analysis."),
-        ("#10B981", "Export & Reports",  "Download data as CSV/Excel/JSON. Export charts as HTML. Generate full data reports. Export Power BI-ready files + M Query scripts."),
+        ("#7C3AED","#F5F3FF","Upload Data",
+         "CSV, Excel, JSON, Parquet. Auto type detection, inline preview, quick summary stats."),
+        ("#F43F5E","#FFF1F2","Data Profiling",
+         "Full per-column profile: missing %, skewness, kurtosis, unique counts, memory usage."),
+        ("#059669","#ECFDF5","Data Cleaning",
+         "Remove duplicates, fill nulls (mean/median/mode/interpolate), outlier IQR & Z-Score removal."),
+        ("#D97706","#FFFBEB","EDA & Statistics",
+         "Seaborn correlation heatmaps, distribution plots, pair plots, t-test, ANOVA, chi-square."),
+        ("#0EA5E9","#F0F9FF","Chart Builder",
+         "19 Plotly chart types. Full parameter control. One-click HTML export + copy Python code."),
+        ("#8B5CF6","#F5F3FF","Auto Dashboard",
+         "Auto-generates KPI cards, correlation matrix, bar charts, box plots and pivot heatmaps."),
+        ("#EC4899","#FDF2F8","Time Series",
+         "Auto-detect dates. Trend lines, rolling averages, seasonality, growth rate analysis."),
+        ("#14B8A6","#F0FDFA","ML Insights",
+         "K-Means clustering, Isolation Forest anomaly detection, feature importance, PCA viz."),
+        ("#F97316","#FFF7ED","Export & Reports",
+         "CSV, Excel, JSON, Parquet. Chart HTML export. Power BI Excel + M Query + DAX bundle."),
     ]
 
-    c1, c2 = st.columns(2)
-    for i, (color, title, desc) in enumerate(features):
-        target = c1 if i % 2 == 0 else c2
-        target.markdown(f"""
-        <div style='background:#FFFFFF;border-radius:10px;padding:1rem 1.3rem;
-                    margin-bottom:0.8rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);
-                    border-left:4px solid {color};display:flex;gap:1rem;align-items:flex-start;'>
-            <div style='flex:1;'>
-                <div style='font-weight:700;color:#0F172A;font-size:0.9rem;margin-bottom:3px'>{title}</div>
-                <div style='color:#64748B;font-size:0.82rem;line-height:1.5'>{desc}</div>
-            </div>
+    cols = st.columns(3)
+    for i, (fg, bg, title, desc) in enumerate(features):
+        cols[i % 3].markdown(f"""
+        <div style='background:#FFFFFF;border-radius:14px;padding:1.2rem 1.4rem;
+                    margin-bottom:1rem;border:1px solid #F3F4F6;
+                    box-shadow:0 1px 4px rgba(0,0,0,.04);
+                    border-top:3px solid {fg};'>
+            <div style='font-weight:800;color:#1C1917;font-size:.9rem;margin-bottom:.4rem;'>{title}</div>
+            <div style='color:#6B7280;font-size:.81rem;line-height:1.55;'>{desc}</div>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.info("**Getting started:** Click **Upload Data** in the sidebar to load your dataset. All other modules unlock automatically once a dataset is loaded.")
-
-    with st.expander("Supported file formats"):
-        st.markdown("""
-        | Format | Extension | Notes |
-        |--------|-----------|-------|
-        | Comma-Separated Values | `.csv` | Auto-detects comma or semicolon delimiter |
-        | Excel Workbook | `.xlsx`, `.xls` | Multi-sheet support with sheet picker |
-        | JSON | `.json` | Records, split, and index orientations |
-        | Parquet | `.parquet` | High-performance columnar format |
-        """)
+    st.info("**Get started** → click **Upload Data** in the sidebar. All modules unlock once a dataset is loaded.")

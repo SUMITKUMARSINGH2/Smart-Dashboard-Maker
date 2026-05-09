@@ -9,6 +9,7 @@ from modules.visualizations import visualizations_page
 from modules.dashboard import dashboard_page
 from modules.timeseries import timeseries_page
 from modules.export import export_page
+from modules.ml_insights import ml_insights_page
 
 st.set_page_config(
     page_title="DataViz Pro",
@@ -19,158 +20,179 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
+*, html, body, [class*="css"] { font-family: 'Plus Jakarta Sans', sans-serif !important; }
 
-/* ── Sidebar ─────────────────────────────── */
-[data-testid="stSidebar"] {
-    background: #0F172A !important;
-    border-right: 1px solid #1E293B;
-}
-[data-testid="stSidebar"] * { color: #CBD5E1 !important; }
-[data-testid="stSidebar"] .stMarkdown p { color: #64748B !important; font-size: 0.75rem; }
-
-/* ── Main content area ───────────────────── */
-.main .block-container {
-    padding: 1.8rem 2.2rem 2rem;
-    max-width: 1400px;
-}
+/* ═══ APP SHELL ═══════════════════════════════════════════════════════ */
 [data-testid="stAppViewContainer"] > .main {
-    background: #F1F5F9;
+    background: #FAFAF9;
+}
+.main .block-container {
+    padding: 2rem 2.5rem 3rem;
+    max-width: 1440px;
 }
 
-/* ── Page header ─────────────────────────── */
-.page-header {
-    background: #FFFFFF;
-    border-left: 4px solid #0EA5E9;
-    padding: 1rem 1.6rem;
-    border-radius: 0 10px 10px 0;
-    margin-bottom: 1.6rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+/* ═══ SIDEBAR ══════════════════════════════════════════════════════════ */
+[data-testid="stSidebar"] {
+    background: #FFFFFF !important;
+    border-right: 1px solid #EDE9FE;
 }
-.page-header h2 { margin: 0; color: #0F172A; font-size: 1.4rem; font-weight: 700; }
-.page-header p  { margin: 0.2rem 0 0; color: #64748B; font-size: 0.85rem; }
+[data-testid="stSidebar"] * { color: #374151 !important; }
 
-/* ── Metric cards ────────────────────────── */
+/* ═══ PAGE HEADER (used by all pages) ════════════════════════════════ */
+.ph-wrap { margin-bottom: 2rem; }
+.ph-eyebrow {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: #7C3AED; margin-bottom: 4px;
+}
+.ph-title {
+    font-size: 1.75rem; font-weight: 800; color: #1C1917;
+    line-height: 1.15; margin: 0;
+}
+.ph-bar {
+    width: 48px; height: 4px;
+    background: linear-gradient(90deg,#7C3AED,#F43F5E);
+    border-radius: 2px; margin: 10px 0;
+}
+.ph-sub { font-size: 0.875rem; color: #6B7280; margin: 0; }
+
+/* ═══ METRIC CARDS ════════════════════════════════════════════════════ */
 div[data-testid="stMetric"] {
     background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #EDE9FE;
+    border-radius: 14px;
+    padding: 1.1rem 1.3rem;
+    box-shadow: 0 1px 3px rgba(124,58,237,.07);
 }
-div[data-testid="stMetricLabel"]  { color: #64748B !important; font-size: 0.78rem !important; }
-div[data-testid="stMetricValue"]  { color: #0F172A !important; font-size: 1.5rem !important; font-weight: 700 !important; }
-div[data-testid="stMetricDelta"]  { font-size: 0.8rem !important; }
+div[data-testid="stMetricLabel"]  { color: #6B7280 !important; font-size: 0.78rem !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing:.04em; }
+div[data-testid="stMetricValue"]  { color: #1C1917 !important; font-size: 1.65rem !important; font-weight: 800 !important; }
 
-/* ── Tabs ─────────────────────────────────── */
-.stTabs [data-baseweb="tab-list"] { gap: 4px; border-bottom: 2px solid #E2E8F0; }
-.stTabs [data-baseweb="tab"] {
-    border-radius: 6px 6px 0 0;
-    padding: 0.45rem 1.1rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #64748B !important;
-    background: transparent;
+/* ═══ TABS ════════════════════════════════════════════════════════════ */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2px;
+    background: #F5F3FF;
+    border-radius: 10px;
+    padding: 4px;
     border: none;
+}
+.stTabs [data-baseweb="tab"] {
+    border-radius: 7px; padding: 0.4rem 1rem;
+    font-size: 0.83rem; font-weight: 600;
+    color: #6B7280 !important; background: transparent; border: none;
 }
 .stTabs [aria-selected="true"] {
-    color: #0EA5E9 !important;
-    border-bottom: 2px solid #0EA5E9 !important;
-    background: #F0F9FF !important;
+    background: #FFFFFF !important;
+    color: #7C3AED !important;
+    box-shadow: 0 1px 4px rgba(124,58,237,.15);
 }
 
-/* ── Buttons ─────────────────────────────── */
+/* ═══ BUTTONS ══════════════════════════════════════════════════════════ */
 .stButton > button {
-    background: #0EA5E9;
-    color: white;
-    border: none;
-    border-radius: 7px;
-    padding: 0.45rem 1.1rem;
-    font-weight: 500;
-    font-size: 0.85rem;
-    transition: background 0.15s;
+    background: linear-gradient(135deg,#7C3AED,#9333EA);
+    color: white !important; border: none;
+    border-radius: 9px; padding: .5rem 1.3rem;
+    font-weight: 700; font-size: .84rem;
+    box-shadow: 0 2px 8px rgba(124,58,237,.3);
+    transition: all .15s;
 }
-.stButton > button:hover { background: #0284C7; color: white; }
+.stButton > button:hover {
+    background: linear-gradient(135deg,#6D28D9,#7C3AED);
+    box-shadow: 0 4px 14px rgba(124,58,237,.4);
+    transform: translateY(-1px);
+    color: white !important;
+}
 .stButton > button[kind="secondary"] {
-    background: #F1F5F9;
-    color: #334155;
-    border: 1px solid #CBD5E1;
+    background: #FFFFFF; color: #7C3AED !important;
+    border: 1.5px solid #DDD6FE;
+    box-shadow: none;
 }
 
-/* ── Download buttons ────────────────────── */
+/* ═══ DOWNLOAD BUTTONS ════════════════════════════════════════════════ */
 .stDownloadButton > button {
-    background: #F59E0B;
-    color: white;
-    border: none;
-    border-radius: 7px;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
+    background: linear-gradient(135deg,#F43F5E,#E11D48);
+    color: white !important; border: none; border-radius: 9px;
+    font-weight: 700; padding: .5rem 1.3rem;
+    box-shadow: 0 2px 8px rgba(244,63,94,.3);
 }
-.stDownloadButton > button:hover { background: #D97706; color: white; }
+.stDownloadButton > button:hover {
+    background: linear-gradient(135deg,#E11D48,#BE123C);
+    box-shadow: 0 4px 14px rgba(244,63,94,.4);
+    transform: translateY(-1px); color: white !important;
+}
 
-/* ── Selectbox / Input ───────────────────── */
+/* ═══ INPUTS ══════════════════════════════════════════════════════════ */
 .stSelectbox [data-baseweb="select"] > div,
 .stTextInput > div > div > input {
-    background: #FFFFFF;
-    border: 1px solid #CBD5E1;
-    border-radius: 7px;
+    background: #FFFFFF; border: 1.5px solid #DDD6FE;
+    border-radius: 8px; color: #1C1917;
 }
+.stTextInput > div > div > input:focus { border-color: #7C3AED; }
 
-/* ── Info / Warning / Success ────────────── */
-.stAlert { border-radius: 8px; font-size: 0.875rem; }
+/* ═══ ALERTS ══════════════════════════════════════════════════════════ */
+.stAlert { border-radius: 10px; font-size: .875rem; }
 
-/* ── Expander ────────────────────────────── */
+/* ═══ EXPANDER ════════════════════════════════════════════════════════ */
 .streamlit-expanderHeader {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    font-weight: 600;
-    color: #0F172A;
+    background: #FFFFFF; border: 1.5px solid #EDE9FE;
+    border-radius: 9px; font-weight: 700; color: #1C1917;
 }
 
-/* ── Dataframe ───────────────────────────── */
-[data-testid="stDataFrame"] { border-radius: 8px; overflow: hidden; }
+/* ═══ DATAFRAME ═══════════════════════════════════════════════════════ */
+[data-testid="stDataFrame"] { border-radius: 10px; overflow: hidden; border: 1px solid #EDE9FE; }
 
-/* ── Section divider label ───────────────── */
-.section-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #475569;
-    font-weight: 600;
-    margin: 1.2rem 0 0.4rem;
+/* ═══ RADIO / CHECKBOX ════════════════════════════════════════════════ */
+.stRadio > label { font-weight: 600; color: #374151; font-size: .83rem; }
+
+/* ═══ SLIDER ══════════════════════════════════════════════════════════ */
+.stSlider [data-baseweb="slider"] { padding: 0; }
+
+/* ═══ PAGE HEADER (legacy .page-header used by modules) ══════════════ */
+.page-header {
+    margin-bottom: 1.8rem;
+    padding-bottom: .3rem;
 }
+.page-header h2 {
+    font-size: 1.65rem; font-weight: 800; color: #1C1917;
+    margin: 0 0 6px;
+}
+.page-header::after {
+    content: ''; display: block; width: 44px; height: 4px;
+    background: linear-gradient(90deg,#7C3AED,#F43F5E);
+    border-radius: 2px; margin: 8px 0 8px;
+}
+.page-header p { font-size: .875rem; color: #6B7280; margin: 0; }
 
-/* ── Stat card ───────────────────────────── */
-.stat-card {
-    background: #FFFFFF;
-    border-radius: 12px;
-    padding: 1.3rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    border-top: 3px solid transparent;
-    text-align: center;
+/* ═══ CARD UTILITY ════════════════════════════════════════════════════ */
+.card {
+    background: #FFFFFF; border-radius: 14px;
+    padding: 1.3rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    border: 1px solid #F3F4F6;
+}
+.tag {
+    display:inline-block; border-radius:20px;
+    padding:.25rem .75rem; font-size:.75rem; font-weight:700;
 }
 </style>
 """, unsafe_allow_html=True)
 
-for key, val in [("raw_df", None), ("df", None), ("filename", None)]:
-    if key not in st.session_state:
-        st.session_state[key] = val
+for k, v in [("raw_df", None), ("df", None), ("filename", None)]:
+    if k not in st.session_state:
+        st.session_state[k] = v
 
+# ── Sidebar ───────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div style='padding: 1rem 0.5rem 0.5rem; border-bottom: 1px solid #1E293B; margin-bottom: 0.8rem;'>
-        <div style='display:flex; align-items:center; gap:10px;'>
-            <div style='width:34px;height:34px;background:#0EA5E9;border-radius:8px;
-                        display:flex;align-items:center;justify-content:center;
-                        font-size:18px;'>📊</div>
+    <div style='padding:.8rem 1rem 1rem;'>
+        <div style='display:flex;align-items:center;gap:10px;margin-bottom:1rem;'>
+            <div style='width:38px;height:38px;
+                        background:linear-gradient(135deg,#7C3AED,#F43F5E);
+                        border-radius:10px;display:flex;align-items:center;
+                        justify-content:center;font-size:1.1rem;'>📊</div>
             <div>
-                <div style='color:#F1F5F9;font-weight:700;font-size:1rem;line-height:1.2'>DataViz Pro</div>
-                <div style='color:#475569;font-size:0.7rem;'>Advanced Analytics</div>
+                <div style='font-size:1rem;font-weight:800;color:#1C1917;'>DataViz Pro</div>
+                <div style='font-size:.7rem;color:#9CA3AF;font-weight:500;'>Advanced Analytics</div>
             </div>
         </div>
     </div>
@@ -181,58 +203,62 @@ with st.sidebar:
         options=[
             "Home", "Upload Data", "Data Profiling", "Data Cleaning",
             "EDA & Statistics", "Chart Builder", "Auto Dashboard",
-            "Time Series", "Export & Reports",
+            "Time Series", "ML Insights", "Export & Reports",
         ],
         icons=[
-            "house", "cloud-upload", "clipboard-data", "tools",
-            "graph-up", "bar-chart", "speedometer2",
-            "clock-history", "box-arrow-up",
+            "house-heart-fill", "cloud-arrow-up-fill", "clipboard2-data-fill",
+            "magic", "graph-up-arrow", "bar-chart-fill", "speedometer",
+            "calendar3", "cpu-fill", "box-arrow-up-right",
         ],
         default_index=0,
         styles={
-            "container": {"padding": "0", "background-color": "transparent"},
-            "icon": {"color": "#0EA5E9", "font-size": "14px"},
-            "nav-link": {
-                "font-size": "13.5px",
-                "font-weight": "500",
-                "text-align": "left",
-                "padding": "0.55rem 1rem",
-                "border-radius": "7px",
-                "margin": "1px 0",
-                "color": "#94A3B8",
+            "container":         {"padding": "0 .5rem", "background-color": "transparent"},
+            "icon":              {"color": "#7C3AED", "font-size": "14px"},
+            "nav-link":          {
+                "font-size": "13px", "font-weight": "600",
+                "padding": ".52rem .9rem", "border-radius": "9px",
+                "margin": "1px 0", "color": "#374151",
             },
             "nav-link-selected": {
-                "background-color": "#1E3A5F",
-                "color": "#FFFFFF",
-                "font-weight": "600",
+                "background": "linear-gradient(135deg,#EDE9FE,#FCE7F3)",
+                "color": "#7C3AED", "font-weight": "800",
             },
         },
     )
 
-    st.markdown("<div style='height:1px;background:#1E293B;margin:0.8rem 0'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:1px;background:#EDE9FE;margin:.8rem 0'></div>",
+                unsafe_allow_html=True)
 
     if st.session_state.df is not None:
         r, c = st.session_state.df.shape
         st.markdown(f"""
-        <div style='background:#132035;border:1px solid #1E3A5F;border-radius:8px;padding:0.8rem 1rem;'>
-            <div style='color:#0EA5E9;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px'>Active Dataset</div>
-            <div style='color:#E2E8F0;font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>{st.session_state.filename}</div>
-            <div style='color:#475569;font-size:0.75rem;margin-top:3px'>{r:,} rows &middot; {c} columns</div>
-        </div>
-        """, unsafe_allow_html=True)
+        <div style='background:linear-gradient(135deg,#F5F3FF,#FDF2F8);
+                    border:1.5px solid #DDD6FE;border-radius:12px;padding:.9rem 1rem;'>
+            <div style='font-size:.66rem;font-weight:800;color:#7C3AED;
+                        text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;'>Active Dataset</div>
+            <div style='font-size:.83rem;font-weight:700;color:#1C1917;
+                        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{st.session_state.filename}</div>
+            <div style='font-size:.74rem;color:#9CA3AF;margin-top:3px;'>{r:,} rows &middot; {c} cols</div>
+        </div>""", unsafe_allow_html=True)
     else:
         st.markdown("""
-        <div style='background:#132035;border:1px dashed #1E3A5F;border-radius:8px;padding:0.8rem 1rem;text-align:center;'>
-            <div style='color:#475569;font-size:0.8rem;'>No dataset loaded</div>
-            <div style='color:#0EA5E9;font-size:0.75rem;margin-top:2px;'>Go to Upload Data →</div>
-        </div>
-        """, unsafe_allow_html=True)
+        <div style='background:#F9FAFB;border:1.5px dashed #DDD6FE;
+                    border-radius:12px;padding:.9rem 1rem;text-align:center;'>
+            <div style='font-size:.8rem;color:#9CA3AF;'>No dataset loaded</div>
+            <div style='font-size:.74rem;color:#7C3AED;font-weight:700;margin-top:2px;'>
+                → Upload Data to start</div>
+        </div>""", unsafe_allow_html=True)
 
-dispatch = {
-    "Home": home_page, "Upload Data": upload_page,
-    "Data Profiling": profiling_page, "Data Cleaning": cleaning_page,
-    "EDA & Statistics": eda_page, "Chart Builder": visualizations_page,
-    "Auto Dashboard": dashboard_page, "Time Series": timeseries_page,
-    "Export & Reports": export_page,
-}
-dispatch[page]()
+# ── Router ───────────────────────────────────────────────────────────────
+{
+    "Home":            home_page,
+    "Upload Data":     upload_page,
+    "Data Profiling":  profiling_page,
+    "Data Cleaning":   cleaning_page,
+    "EDA & Statistics":eda_page,
+    "Chart Builder":   visualizations_page,
+    "Auto Dashboard":  dashboard_page,
+    "Time Series":     timeseries_page,
+    "ML Insights":     ml_insights_page,
+    "Export & Reports":export_page,
+}[page]()

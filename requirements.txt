@@ -63,3 +63,4 @@ pyarrow
 scipy
 seaborn
 xlsxwriter
+scikit-learn
