@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from scipy import stats
+from scipy import stats as sc_stats
 
 
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
+                unsafe_allow_html=True)
 
 
 def cleaning_page():
@@ -24,7 +25,9 @@ def cleaning_page():
     c4.metric("Duplicate rows", f"{df.duplicated().sum():,}")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Duplicates", "Missing Values", "Outliers", "Column Ops", "Reset"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        ["Duplicates", "Missing Values", "Outliers", "Column Ops", "Reset"]
+    )
 
     with tab1:
         n_dup = df.duplicated().sum()
@@ -69,27 +72,38 @@ def cleaning_page():
                 if strategy == "Drop rows with nulls":
                     temp = temp.dropna(subset=target_cols).reset_index(drop=True)
                 elif strategy == "Fill with Mean":
-                    for c in num_c: temp[c] = temp[c].fillna(temp[c].mean())
-                    for c in oth_c: temp[c] = temp[c].fillna(temp[c].mode().iloc[0] if not temp[c].mode().empty else "Unknown")
+                    for c in num_c:
+                        temp[c] = temp[c].fillna(temp[c].mean())
+                    for c in oth_c:
+                        m = temp[c].mode()
+                        temp[c] = temp[c].fillna(m.iloc[0] if not m.empty else "Unknown")
                 elif strategy == "Fill with Median":
-                    for c in num_c: temp[c] = temp[c].fillna(temp[c].median())
-                    for c in oth_c: temp[c] = temp[c].fillna(temp[c].mode().iloc[0] if not temp[c].mode().empty else "Unknown")
+                    for c in num_c:
+                        temp[c] = temp[c].fillna(temp[c].median())
+                    for c in oth_c:
+                        m = temp[c].mode()
+                        temp[c] = temp[c].fillna(m.iloc[0] if not m.empty else "Unknown")
                 elif strategy == "Fill with Mode":
                     for c in target_cols:
                         m = temp[c].mode()
-                        if not m.empty: temp[c] = temp[c].fillna(m.iloc[0])
+                        if not m.empty:
+                            temp[c] = temp[c].fillna(m.iloc[0])
                 elif strategy == "Fill with Constant":
                     for c in target_cols:
-                        try: v = float(const_val) if pd.api.types.is_numeric_dtype(temp[c]) else const_val
-                        except: v = const_val
+                        try:
+                            v = float(const_val) if pd.api.types.is_numeric_dtype(temp[c]) else const_val
+                        except ValueError:
+                            v = const_val
                         temp[c] = temp[c].fillna(v)
                 elif strategy == "Forward Fill":
                     temp[target_cols] = temp[target_cols].ffill()
                 elif strategy == "Backward Fill":
                     temp[target_cols] = temp[target_cols].bfill()
                 elif strategy == "Interpolate (linear)":
-                    for c in num_c: temp[c] = temp[c].interpolate(method="linear", limit_direction="both")
-                    for c in oth_c: temp[c] = temp[c].ffill().bfill()
+                    for c in num_c:
+                        temp[c] = temp[c].interpolate(method="linear", limit_direction="both")
+                    for c in oth_c:
+                        temp[c] = temp[c].ffill().bfill()
 
                 st.session_state.df = temp
                 st.success("Missing values handled.")
@@ -102,25 +116,24 @@ def cleaning_page():
         else:
             col = st.selectbox("Column", num_cols)
             method = st.radio("Detection method", ["IQR", "Z-Score"], horizontal=True)
-            action = st.radio("Action on outliers", ["Highlight Only", "Remove Rows", "Cap (Winsorize)"], horizontal=True)
+            action = st.radio("Action on outliers",
+                              ["Highlight Only", "Remove Rows", "Cap (Winsorize)"], horizontal=True)
 
             s = df[col].dropna()
             if method == "IQR":
                 factor = st.slider("IQR multiplier", 1.0, 3.0, 1.5, 0.1)
                 Q1, Q3 = s.quantile(0.25), s.quantile(0.75)
-                low, high = Q1 - factor*(Q3-Q1), Q3 + factor*(Q3-Q1)
+                low, high = Q1 - factor * (Q3 - Q1), Q3 + factor * (Q3 - Q1)
                 mask = (df[col] < low) | (df[col] > high)
             else:
                 threshold = st.slider("Z-Score threshold", 1.5, 4.0, 3.0, 0.1)
-                from scipy import stats as sc
-                z = np.abs(sc.zscore(s))
+                z = np.abs(sc_stats.zscore(s))
                 mask = pd.Series(False, index=df.index)
-                valid_idx = s.index[:len(z)]
-                mask.loc[valid_idx] = z > threshold
-                low = s.mean() - threshold * s.std()
-                high = s.mean() + threshold * s.std()
+                mask.loc[s.index[:len(z)]] = z > threshold
+                low = float(s.mean() - threshold * s.std())
+                high = float(s.mean() + threshold * s.std())
 
-            n_out = mask.sum()
+            n_out = int(mask.sum())
             ca, cb, cc = st.columns(3)
             ca.metric("Outliers found", n_out)
             cb.metric("Lower bound", f"{low:.3g}")
@@ -161,9 +174,12 @@ def cleaning_page():
         if st.button("Convert"):
             try:
                 temp = df.copy()
-                if dt == "datetime": temp[dc] = pd.to_datetime(temp[dc])
-                elif dt == "bool": temp[dc] = temp[dc].astype(bool)
-                else: temp[dc] = temp[dc].astype(dt)
+                if dt == "datetime":
+                    temp[dc] = pd.to_datetime(temp[dc])
+                elif dt == "bool":
+                    temp[dc] = temp[dc].astype(bool)
+                else:
+                    temp[dc] = temp[dc].astype(dt)
                 st.session_state.df = temp
                 st.success(f"`{dc}` converted to {dt}")
                 st.rerun()
@@ -175,16 +191,19 @@ def cleaning_page():
         str_cols = df.select_dtypes(include="object").columns.tolist()
         if str_cols:
             sc_ = st.selectbox("String column", str_cols)
-            sop = st.selectbox("Operation", ["Strip whitespace", "Lowercase", "Uppercase", "Title Case", "Remove special chars"])
+            sop = st.selectbox("Operation",
+                               ["Strip whitespace", "Lowercase", "Uppercase",
+                                "Title Case", "Remove special chars"])
             if st.button("Apply"):
                 temp = df.copy()
-                ops = {"Strip whitespace": str.strip, "Lowercase": str.lower,
-                       "Uppercase": str.upper, "Title Case": str.title}
-                if sop in ops:
-                    temp[sc_] = temp[sc_].str.strip().str.lower() if sop == "Lowercase" else getattr(temp[sc_].str, sop.split()[0].lower())()
-                    if sop == "Strip whitespace": temp[sc_] = temp[sc_].str.strip()
-                    elif sop == "Title Case": temp[sc_] = temp[sc_].str.title()
-                    elif sop == "Uppercase": temp[sc_] = temp[sc_].str.upper()
+                if sop == "Strip whitespace":
+                    temp[sc_] = temp[sc_].str.strip()
+                elif sop == "Lowercase":
+                    temp[sc_] = temp[sc_].str.lower()
+                elif sop == "Uppercase":
+                    temp[sc_] = temp[sc_].str.upper()
+                elif sop == "Title Case":
+                    temp[sc_] = temp[sc_].str.title()
                 else:
                     temp[sc_] = temp[sc_].str.replace(r"[^a-zA-Z0-9\s]", "", regex=True)
                 st.session_state.df = temp
@@ -194,7 +213,8 @@ def cleaning_page():
     with tab5:
         st.warning("This will undo ALL cleaning operations and restore the original uploaded data.")
         r1, r2 = st.columns(2)
-        r1.metric("Current rows", f"{df.shape[0]:,}", delta=str(df.shape[0] - st.session_state.raw_df.shape[0]))
+        r1.metric("Current rows", f"{df.shape[0]:,}",
+                  delta=str(df.shape[0] - st.session_state.raw_df.shape[0]))
         r2.metric("Original rows", f"{st.session_state.raw_df.shape[0]:,}")
         if st.button("Reset to Original", type="primary"):
             st.session_state.df = st.session_state.raw_df.copy()

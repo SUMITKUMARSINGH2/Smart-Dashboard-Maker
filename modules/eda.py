@@ -8,8 +8,31 @@ import io
 from scipy import stats as scipy_stats
 
 
+_SEABORN_STYLE = {
+    "axes.facecolor": "#F8FAFC", "figure.facecolor": "#FFFFFF",
+    "axes.edgecolor": "#E2E8F0", "text.color": "#334155",
+    "axes.labelcolor": "#64748B", "xtick.color": "#64748B", "ytick.color": "#64748B",
+    "grid.color": "#F1F5F9",
+}
+
+
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
+                unsafe_allow_html=True)
+
+
+@st.cache_data(show_spinner=False)
+def _corr_matrix(df_hash: str, cols: tuple, method: str, _df: pd.DataFrame) -> pd.DataFrame:
+    return _df[list(cols)].corr(method=method)
+
+
+@st.cache_data(show_spinner=False)
+def _top_pairs(corr: pd.DataFrame) -> pd.DataFrame:
+    pairs = corr.unstack().reset_index()
+    pairs.columns = ["Col A", "Col B", "Correlation"]
+    pairs = pairs[pairs["Col A"] != pairs["Col B"]]
+    pairs["abs"] = pairs["Correlation"].abs()
+    return pairs.sort_values("abs", ascending=False).drop_duplicates("abs").head(15).drop("abs", axis=1).round(4)
 
 
 def eda_page():
@@ -24,24 +47,22 @@ def eda_page():
     cat_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "Correlation Heatmap", "Distributions", "Box Plots", "Pair Plot", "Hypothesis Tests", "Scatter Analysis"
+        "Correlation Heatmap", "Distributions", "Box Plots", "Pair Plot",
+        "Hypothesis Tests", "Scatter Analysis",
     ])
-
-    SEABORN_STYLE = {"axes.facecolor": "#F8FAFC", "figure.facecolor": "#FFFFFF",
-                     "axes.edgecolor": "#E2E8F0", "text.color": "#334155",
-                     "axes.labelcolor": "#64748B", "xtick.color": "#64748B", "ytick.color": "#64748B",
-                     "grid.color": "#F1F5F9"}
 
     with tab1:
         if len(num_cols) < 2:
             st.info("Need at least 2 numeric columns.")
         else:
-            sel = st.multiselect("Columns (empty = all numeric)", num_cols, default=num_cols[:min(12, len(num_cols))])
-            if not sel: sel = num_cols
+            sel = st.multiselect("Columns (empty = all numeric)", num_cols,
+                                 default=num_cols[:min(12, len(num_cols))])
+            if not sel:
+                sel = num_cols
             method = st.radio("Method", ["pearson", "spearman", "kendall"], horizontal=True)
             corr = df[sel].corr(method=method)
 
-            with sns.axes_style("white", SEABORN_STYLE):
+            with sns.axes_style("white", _SEABORN_STYLE):
                 fig, ax = plt.subplots(figsize=(max(8, len(sel)), max(6, len(sel) * 0.8)))
                 mask = np.triu(np.ones_like(corr, dtype=bool))
                 cmap = sns.diverging_palette(220, 10, as_cmap=True)
@@ -49,7 +70,7 @@ def eda_page():
                             center=0, vmin=-1, vmax=1, ax=ax, square=True,
                             linewidths=0.5, linecolor="#E2E8F0",
                             cbar_kws={"shrink": 0.8},
-                            annot_kws={"size": max(7, 10 - len(sel)//3)})
+                            annot_kws={"size": max(7, 10 - len(sel) // 3)})
                 ax.set_title(f"{method.capitalize()} Correlation Matrix", fontsize=13,
                              fontweight="bold", color="#0F172A", pad=12)
                 plt.tight_layout()
@@ -60,11 +81,7 @@ def eda_page():
                 plt.close()
 
             st.markdown("**Top correlations**")
-            pairs = corr.unstack().reset_index()
-            pairs.columns = ["Col A", "Col B", "Correlation"]
-            pairs = pairs[pairs["Col A"] != pairs["Col B"]]
-            pairs["abs"] = pairs["Correlation"].abs()
-            top = pairs.sort_values("abs", ascending=False).drop_duplicates("abs").head(15).drop("abs", axis=1).round(4)
+            top = _top_pairs(corr)
             st.dataframe(top, use_container_width=True)
 
     with tab2:
@@ -77,9 +94,8 @@ def eda_page():
             show_kde = c2.checkbox("Show KDE", True)
 
             data = df[col].dropna()
-            with sns.axes_style("white", SEABORN_STYLE):
-                fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
+            with sns.axes_style("white", _SEABORN_STYLE):
+                fig, axes = plt.subplots(1, 2, figsize=(13, 5))
                 sns.histplot(data, bins=bins, kde=show_kde, ax=axes[0],
                              color="#0EA5E9", edgecolor="white", alpha=0.85)
                 axes[0].set_title(f"Distribution — {col}", fontweight="bold", color="#0F172A")
@@ -87,7 +103,8 @@ def eda_page():
 
                 mu, sigma = scipy_stats.norm.fit(data)
                 x = np.linspace(data.min(), data.max(), 200)
-                axes[1].plot(x, scipy_stats.norm.pdf(x, mu, sigma), "#F59E0B", linewidth=2, label="Normal fit")
+                axes[1].plot(x, scipy_stats.norm.pdf(x, mu, sigma), "#F59E0B",
+                             linewidth=2, label="Normal fit")
                 sns.kdeplot(data, ax=axes[1], color="#0EA5E9", linewidth=2, label="KDE")
                 axes[1].set_title(f"KDE vs Normal Fit — {col}", fontweight="bold", color="#0F172A")
                 axes[1].legend()
@@ -120,10 +137,11 @@ def eda_page():
             if sel:
                 g = group_col if group_col != "None" else None
                 if g and len(sel) == 1:
-                    fig = px.box(df, x=g, y=sel[0], color=g, template="plotly_white", points="outliers")
+                    fig = px.box(df, x=g, y=sel[0], color=g,
+                                 template="plotly_white", points="outliers")
                 elif g and len(sel) > 1:
-                    fig = px.box(df.melt(value_vars=sel, id_vars=[g]), x="variable", y="value",
-                                 color=g, template="plotly_white")
+                    fig = px.box(df.melt(value_vars=sel, id_vars=[g]),
+                                 x="variable", y="value", color=g, template="plotly_white")
                 else:
                     fig = px.box(df[sel].melt(var_name="Column", value_name="Value"),
                                  x="Column", y="Value", color="Column", template="plotly_white")
@@ -135,7 +153,8 @@ def eda_page():
         if len(num_cols) < 2:
             st.info("Need at least 2 numeric columns.")
         else:
-            sel_pp = st.multiselect("Columns (2–5 recommended)", num_cols, default=num_cols[:min(4, len(num_cols))])
+            sel_pp = st.multiselect("Columns (2–5 recommended)", num_cols,
+                                    default=num_cols[:min(4, len(num_cols))])
             hue_pp = st.selectbox("Color by", ["None"] + cat_cols)
             if sel_pp and len(sel_pp) >= 2:
                 with st.spinner("Building pair plot…"):
@@ -143,14 +162,15 @@ def eda_page():
                     pp_df = df[sel_pp + ([hue_val] if hue_val else [])].dropna()
                     if len(pp_df) > 2000:
                         pp_df = pp_df.sample(2000, random_state=42)
-                    with sns.axes_style("white", SEABORN_STYLE):
+                    with sns.axes_style("white", _SEABORN_STYLE):
                         g = sns.pairplot(pp_df, hue=hue_val, corner=False,
-                                         plot_kws={"alpha": 0.5, "s": 18},
-                                         palette="tab10")
+                                         plot_kws={"alpha": 0.5, "s": 18}, palette="tab10")
                         g.fig.patch.set_facecolor("#FFFFFF")
-                        g.fig.suptitle("Pair Plot", y=1.02, fontsize=12, fontweight="bold", color="#0F172A")
+                        g.fig.suptitle("Pair Plot", y=1.02, fontsize=12,
+                                       fontweight="bold", color="#0F172A")
                         buf = io.BytesIO()
-                        g.fig.savefig(buf, format="png", dpi=120, bbox_inches="tight", facecolor="#FFFFFF")
+                        g.fig.savefig(buf, format="png", dpi=120,
+                                      bbox_inches="tight", facecolor="#FFFFFF")
                         buf.seek(0)
                         st.image(buf, use_container_width=True)
                         plt.close("all")
@@ -158,7 +178,7 @@ def eda_page():
     with tab5:
         test = st.selectbox("Test", [
             "t-test (2 numeric groups)", "Chi-square (categorical independence)",
-            "ANOVA (3+ groups)", "Mann-Whitney U (non-parametric)"
+            "ANOVA (3+ groups)", "Mann-Whitney U (non-parametric)",
         ])
 
         if test == "t-test (2 numeric groups)" and cat_cols and num_cols:
