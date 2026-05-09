@@ -41,8 +41,6 @@ st.markdown("""
     min-width: 230px !important;
     max-width: 250px !important;
 }
-[data-testid="stSidebar"] > div { padding: 0 !important; }
-
 /* Hide the default Streamlit radio dot */
 [data-testid="stSidebar"] .stRadio > div { gap: 0 !important; }
 [data-testid="stSidebar"] .stRadio [data-testid="stWidgetLabel"] { display: none; }
@@ -73,34 +71,6 @@ st.markdown("""
     background: linear-gradient(135deg, #EDE9FE, #FCE7F3) !important;
     color: #7C3AED !important;
     font-weight: 800 !important;
-}
-
-/* ═══ NAV ITEM custom class ════════════════════════════════════════════════ */
-.nav-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: .42rem .9rem;
-    border-radius: 8px;
-    margin: 1px 4px;
-    cursor: pointer;
-    font-size: .82rem; font-weight: 600; color: #374151;
-    transition: background .12s;
-    white-space: nowrap;
-    text-decoration: none;
-}
-.nav-item:hover { background: #F5F3FF; color: #7C3AED; }
-.nav-item.active {
-    background: linear-gradient(135deg,#EDE9FE,#FCE7F3);
-    color: #7C3AED; font-weight: 800;
-}
-.nav-icon { font-size: .85rem; width: 18px; text-align: center; }
-.nav-sep {
-    height: 1px; background: #E2E8F0;
-    margin: .5rem .9rem;
-}
-.nav-section {
-    font-size: .6rem; font-weight: 800; letter-spacing: .1em;
-    text-transform: uppercase; color: #9CA3AF;
-    padding: .6rem .9rem .2rem;
 }
 
 /* ═══ PAGE HEADER ══════════════════════════════════════════════════════════ */
@@ -299,18 +269,14 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     # Main nav
-    st.markdown("<div class='nav-section'>Navigation</div>", unsafe_allow_html=True)
     for icon, label in _MAIN_PAGES:
-        active = st.session_state._page == label
-        cls = "nav-item active" if active else "nav-item"
         if st.sidebar.button(f"{icon}  {label}", key=f"nav_{label}",
                               use_container_width=True):
             st.session_state._page = label
             st.rerun()
 
     # Separator + legal
-    st.markdown("<div class='nav-sep'></div><div class='nav-section'>Legal</div>",
-                unsafe_allow_html=True)
+    st.divider()
     for icon, label in _LEGAL_PAGES:
         active = st.session_state._page == label
         if st.sidebar.button(f"{icon}  {label}", key=f"nav_{label}",
@@ -319,7 +285,7 @@ with st.sidebar:
             st.rerun()
 
     # Dataset info badge
-    st.markdown("<div class='nav-sep'></div>", unsafe_allow_html=True)
+    st.divider()
     if st.session_state.df is not None:
         r, c = st.session_state.df.shape
         fn = st.session_state.filename or "dataset"
