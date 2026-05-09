@@ -57,3 +57,9 @@ reportlab==4.4.3
 streamlit==1.49.0
 streamlit-lottie==0.0.5
 streamlit-option-menu==0.4.0
+matplotlib
+openpyxl
+pyarrow
+scipy
+seaborn
+xlsxwriter
