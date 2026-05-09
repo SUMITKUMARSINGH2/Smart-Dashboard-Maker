@@ -10,6 +10,7 @@ from modules.dashboard import dashboard_page
 from modules.timeseries import timeseries_page
 from modules.export import export_page
 from modules.ml_insights import ml_insights_page
+from modules.nlq import nlq_page
 
 st.set_page_config(
     page_title="DataViz Pro",
@@ -203,12 +204,12 @@ with st.sidebar:
         options=[
             "Home", "Upload Data", "Data Profiling", "Data Cleaning",
             "EDA & Statistics", "Chart Builder", "Auto Dashboard",
-            "Time Series", "ML Insights", "Export & Reports",
+            "Time Series", "ML Insights", "Ask Your Data", "Export & Reports",
         ],
         icons=[
             "house-heart-fill", "cloud-arrow-up-fill", "clipboard2-data-fill",
             "magic", "graph-up-arrow", "bar-chart-fill", "speedometer",
-            "calendar3", "cpu-fill", "box-arrow-up-right",
+            "calendar3", "cpu-fill", "chat-dots-fill", "box-arrow-up-right",
         ],
         default_index=0,
         styles={
@@ -251,14 +252,15 @@ with st.sidebar:
 
 # ── Router ───────────────────────────────────────────────────────────────
 {
-    "Home":            home_page,
-    "Upload Data":     upload_page,
-    "Data Profiling":  profiling_page,
-    "Data Cleaning":   cleaning_page,
-    "EDA & Statistics":eda_page,
-    "Chart Builder":   visualizations_page,
-    "Auto Dashboard":  dashboard_page,
-    "Time Series":     timeseries_page,
-    "ML Insights":     ml_insights_page,
-    "Export & Reports":export_page,
+    "Home":             home_page,
+    "Upload Data":      upload_page,
+    "Data Profiling":   profiling_page,
+    "Data Cleaning":    cleaning_page,
+    "EDA & Statistics": eda_page,
+    "Chart Builder":    visualizations_page,
+    "Auto Dashboard":   dashboard_page,
+    "Time Series":      timeseries_page,
+    "ML Insights":      ml_insights_page,
+    "Ask Your Data":    nlq_page,
+    "Export & Reports": export_page,
 }[page]()
