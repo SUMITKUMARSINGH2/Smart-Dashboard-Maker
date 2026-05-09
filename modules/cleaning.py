@@ -5,8 +5,13 @@ from scipy import stats as sc_stats
 
 
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
-                unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class='page-header'>
+        <div class='page-header-eyebrow'>// data cleaning</div>
+        <h2>{title}</h2>
+        <div class='page-header-bar'></div>
+        <p>{sub}</p>
+    </div>""", unsafe_allow_html=True)
 
 
 def cleaning_page():
@@ -151,7 +156,7 @@ def cleaning_page():
                 st.rerun()
 
     with tab4:
-        st.markdown("**Rename Column**")
+        st.markdown("<span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Rename Column</span>", unsafe_allow_html=True)
         rc = st.selectbox("Column to rename", df.columns.tolist(), key="rc")
         rn = st.text_input("New name", value=rc, key="rn")
         if st.button("Rename") and rn != rc:
@@ -160,7 +165,7 @@ def cleaning_page():
             st.rerun()
 
         st.markdown("---")
-        st.markdown("**Drop Columns**")
+        st.markdown("<span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Drop Columns</span>", unsafe_allow_html=True)
         drop_cols = st.multiselect("Select columns to remove", df.columns.tolist())
         if st.button("Drop Selected") and drop_cols:
             st.session_state.df = df.drop(columns=drop_cols)
@@ -168,7 +173,7 @@ def cleaning_page():
             st.rerun()
 
         st.markdown("---")
-        st.markdown("**Change Data Type**")
+        st.markdown("<span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Change Data Type</span>", unsafe_allow_html=True)
         dc = st.selectbox("Column", df.columns.tolist(), key="dc")
         dt = st.selectbox("Convert to", ["int64", "float64", "str", "datetime", "bool"])
         if st.button("Convert"):
@@ -187,7 +192,7 @@ def cleaning_page():
                 st.error(f"Conversion failed: {e}")
 
         st.markdown("---")
-        st.markdown("**String Operations**")
+        st.markdown("<span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>String Operations</span>", unsafe_allow_html=True)
         str_cols = df.select_dtypes(include="object").columns.tolist()
         if str_cols:
             sc_ = st.selectbox("String column", str_cols)

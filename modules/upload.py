@@ -34,8 +34,13 @@ def _parse_file(data: bytes, name: str) -> pd.DataFrame:
 
 
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
-                unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class='page-header'>
+        <div class='page-header-eyebrow'>// data ingestion</div>
+        <h2>{title}</h2>
+        <div class='page-header-bar'></div>
+        <p>{sub}</p>
+    </div>""", unsafe_allow_html=True)
 
 
 def upload_page():
@@ -47,11 +52,12 @@ def upload_page():
     )
 
     st.markdown("""
-    <div style='background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;
-                padding:.8rem 1rem;margin:.5rem 0 1rem;font-size:.82rem;color:#475569;'>
-        <b style='color:#0F172A;'>Supported:</b>
-        &nbsp;📄 CSV &nbsp;·&nbsp; 📊 Excel .xlsx/.xls &nbsp;·&nbsp;
-        🗂️ JSON &nbsp;·&nbsp; 🗃️ Parquet
+    <div style='background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.15);
+                border-radius:10px;padding:.75rem 1rem;margin:.5rem 0 1rem;
+                font-size:.81rem;color:#64748B;font-family:"JetBrains Mono",monospace;'>
+        <span style='color:#00D4FF;font-weight:600;'>Supported:</span>
+        &nbsp;CSV &nbsp;·&nbsp; Excel .xlsx/.xls &nbsp;·&nbsp;
+        JSON &nbsp;·&nbsp; Parquet
     </div>
     """, unsafe_allow_html=True)
 
@@ -70,10 +76,12 @@ def upload_page():
 
     if st.session_state.df is None:
         st.markdown("""
-        <div style='text-align:center;padding:3rem 1rem;color:#94A3B8;'>
-            <div style='font-size:2.5rem;margin-bottom:.8rem;'>📂</div>
-            <div style='font-size:1rem;font-weight:600;'>Upload a file above to get started</div>
-            <div style='font-size:.85rem;margin-top:.4rem;'>
+        <div style='text-align:center;padding:3.5rem 1rem;color:#2D3748;
+                    border:1px dashed rgba(255,255,255,0.05);border-radius:16px;
+                    background:rgba(255,255,255,0.01);margin-top:1rem;'>
+            <div style='font-size:2.5rem;margin-bottom:.8rem;opacity:.4;'>⬆</div>
+            <div style='font-size:.95rem;font-weight:600;color:#4A5568;'>Upload a file above to get started</div>
+            <div style='font-size:.82rem;margin-top:.4rem;color:#2D3748;'>
                 Your data stays in your session — it is never saved or shared.
             </div>
         </div>
@@ -91,7 +99,7 @@ def upload_page():
     c5.metric("Memory", f"{mem/1024:.1f} KB" if mem < 1024**2 else f"{mem/1024/1024:.1f} MB")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("**Data Preview**")
+    st.markdown("<span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Data Preview</span>", unsafe_allow_html=True)
     ca, cb = st.columns([3, 1])
     with ca:
         n_rows = st.slider("Rows to show", 5, min(200, df.shape[0]), 10)
@@ -106,7 +114,7 @@ def upload_page():
         disp = df.sample(min(n_rows, len(df)))
     st.dataframe(disp, use_container_width=True, height=300)
 
-    st.markdown("<br>**Column Info**", unsafe_allow_html=True)
+    st.markdown("<br><span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Column Info</span>", unsafe_allow_html=True)
     col_info = pd.DataFrame({
         "Column": df.columns,
         "Dtype": df.dtypes.values,
@@ -120,5 +128,5 @@ def upload_page():
 
     num_df = df.select_dtypes(include="number")
     if not num_df.empty:
-        st.markdown("<br>**Numeric Summary**", unsafe_allow_html=True)
+        st.markdown("<br><span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Numeric Summary</span>", unsafe_allow_html=True)
         st.dataframe(num_df.describe().T.round(4), use_container_width=True)

@@ -8,17 +8,34 @@ import io
 from scipy import stats as scipy_stats
 
 
-_SEABORN_STYLE = {
-    "axes.facecolor": "#F8FAFC", "figure.facecolor": "#FFFFFF",
-    "axes.edgecolor": "#E2E8F0", "text.color": "#334155",
-    "axes.labelcolor": "#64748B", "xtick.color": "#64748B", "ytick.color": "#64748B",
-    "grid.color": "#F1F5F9",
+_DARK_STYLE = {
+    "axes.facecolor": "#0A0F1E",
+    "figure.facecolor": "#0A0F1E",
+    "axes.edgecolor": "#1E293B",
+    "text.color": "#94A3B8",
+    "axes.labelcolor": "#64748B",
+    "xtick.color": "#64748B",
+    "ytick.color": "#64748B",
+    "grid.color": "#1E293B",
 }
+
+_PLOTLY_DARK = dict(
+    paper_bgcolor="#0A0F1E",
+    plot_bgcolor="#0A0F1E",
+    font=dict(color="#94A3B8", family="Space Grotesk"),
+    xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+    yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+)
 
 
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
-                unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class='page-header'>
+        <div class='page-header-eyebrow'>// exploratory analysis</div>
+        <h2>{title}</h2>
+        <div class='page-header-bar'></div>
+        <p>{sub}</p>
+    </div>""", unsafe_allow_html=True)
 
 
 @st.cache_data(show_spinner=False)
@@ -62,25 +79,28 @@ def eda_page():
             method = st.radio("Method", ["pearson", "spearman", "kendall"], horizontal=True)
             corr = df[sel].corr(method=method)
 
-            with sns.axes_style("white", _SEABORN_STYLE):
+            with sns.axes_style("dark", _DARK_STYLE):
                 fig, ax = plt.subplots(figsize=(max(8, len(sel)), max(6, len(sel) * 0.8)))
+                fig.patch.set_facecolor("#0A0F1E")
+                ax.set_facecolor("#0A0F1E")
                 mask = np.triu(np.ones_like(corr, dtype=bool))
-                cmap = sns.diverging_palette(220, 10, as_cmap=True)
+                cmap = sns.diverging_palette(198, 280, s=85, l=50, as_cmap=True)
                 sns.heatmap(corr, mask=mask, annot=True, fmt=".2f", cmap=cmap,
                             center=0, vmin=-1, vmax=1, ax=ax, square=True,
-                            linewidths=0.5, linecolor="#E2E8F0",
+                            linewidths=0.5, linecolor="#1E293B",
                             cbar_kws={"shrink": 0.8},
-                            annot_kws={"size": max(7, 10 - len(sel) // 3)})
+                            annot_kws={"size": max(7, 10 - len(sel) // 3), "color": "#E2E8F0"})
                 ax.set_title(f"{method.capitalize()} Correlation Matrix", fontsize=13,
-                             fontweight="bold", color="#0F172A", pad=12)
+                             fontweight="bold", color="#E2E8F0", pad=12)
+                ax.tick_params(colors="#64748B")
                 plt.tight_layout()
                 buf = io.BytesIO()
-                plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#FFFFFF")
+                plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#0A0F1E")
                 buf.seek(0)
                 st.image(buf, use_container_width=True)
                 plt.close()
 
-            st.markdown("**Top correlations**")
+            st.markdown("<span style='color:#A0AEC0;font-weight:600;font-size:.83rem;'>Top correlations</span>", unsafe_allow_html=True)
             top = _top_pairs(corr)
             st.dataframe(top, use_container_width=True)
 
@@ -94,24 +114,30 @@ def eda_page():
             show_kde = c2.checkbox("Show KDE", True)
 
             data = df[col].dropna()
-            with sns.axes_style("white", _SEABORN_STYLE):
+            with sns.axes_style("dark", _DARK_STYLE):
                 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+                fig.patch.set_facecolor("#0A0F1E")
+                for ax in axes:
+                    ax.set_facecolor("#0A0F1E")
+                    for sp in ax.spines.values():
+                        sp.set_edgecolor("#1E293B")
+
                 sns.histplot(data, bins=bins, kde=show_kde, ax=axes[0],
-                             color="#0EA5E9", edgecolor="white", alpha=0.85)
-                axes[0].set_title(f"Distribution — {col}", fontweight="bold", color="#0F172A")
+                             color="#00D4FF", edgecolor="#0A0F1E", alpha=0.8)
+                axes[0].set_title(f"Distribution — {col}", fontweight="bold", color="#E2E8F0")
                 axes[0].set_xlabel(col, color="#64748B")
 
                 mu, sigma = scipy_stats.norm.fit(data)
                 x = np.linspace(data.min(), data.max(), 200)
                 axes[1].plot(x, scipy_stats.norm.pdf(x, mu, sigma), "#F59E0B",
                              linewidth=2, label="Normal fit")
-                sns.kdeplot(data, ax=axes[1], color="#0EA5E9", linewidth=2, label="KDE")
-                axes[1].set_title(f"KDE vs Normal Fit — {col}", fontweight="bold", color="#0F172A")
-                axes[1].legend()
+                sns.kdeplot(data, ax=axes[1], color="#00D4FF", linewidth=2, label="KDE")
+                axes[1].set_title(f"KDE vs Normal Fit — {col}", fontweight="bold", color="#E2E8F0")
+                axes[1].legend(facecolor="#0A0F1E", labelcolor="#94A3B8", edgecolor="#1E293B")
 
                 plt.tight_layout()
                 buf = io.BytesIO()
-                plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#FFFFFF")
+                plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#0A0F1E")
                 buf.seek(0)
                 st.image(buf, use_container_width=True)
                 plt.close()
@@ -138,15 +164,16 @@ def eda_page():
                 g = group_col if group_col != "None" else None
                 if g and len(sel) == 1:
                     fig = px.box(df, x=g, y=sel[0], color=g,
-                                 template="plotly_white", points="outliers")
+                                 template="plotly_dark", points="outliers",
+                                 color_discrete_sequence=["#00D4FF","#7C3AED","#FF006E","#10B981","#F59E0B"])
                 elif g and len(sel) > 1:
                     fig = px.box(df.melt(value_vars=sel, id_vars=[g]),
-                                 x="variable", y="value", color=g, template="plotly_white")
+                                 x="variable", y="value", color=g, template="plotly_dark")
                 else:
                     fig = px.box(df[sel].melt(var_name="Column", value_name="Value"),
-                                 x="Column", y="Value", color="Column", template="plotly_white")
-                fig.update_layout(height=500, showlegend=True,
-                                  plot_bgcolor="#F8FAFC", paper_bgcolor="#FFFFFF")
+                                 x="Column", y="Value", color="Column", template="plotly_dark",
+                                 color_discrete_sequence=["#00D4FF","#7C3AED","#FF006E","#10B981","#F59E0B"])
+                fig.update_layout(height=500, showlegend=True, **_PLOTLY_DARK)
                 st.plotly_chart(fig, use_container_width=True)
 
     with tab4:
@@ -162,15 +189,22 @@ def eda_page():
                     pp_df = df[sel_pp + ([hue_val] if hue_val else [])].dropna()
                     if len(pp_df) > 2000:
                         pp_df = pp_df.sample(2000, random_state=42)
-                    with sns.axes_style("white", _SEABORN_STYLE):
+                    with sns.axes_style("dark", _DARK_STYLE):
                         g = sns.pairplot(pp_df, hue=hue_val, corner=False,
-                                         plot_kws={"alpha": 0.5, "s": 18}, palette="tab10")
-                        g.fig.patch.set_facecolor("#FFFFFF")
+                                         plot_kws={"alpha": 0.5, "s": 18},
+                                         palette=["#00D4FF", "#7C3AED", "#FF006E",
+                                                   "#10B981", "#F59E0B", "#0EA5E9"])
+                        g.fig.patch.set_facecolor("#0A0F1E")
+                        for ax in g.axes.flatten():
+                            if ax is not None:
+                                ax.set_facecolor("#0A0F1E")
+                                for sp in ax.spines.values():
+                                    sp.set_edgecolor("#1E293B")
                         g.fig.suptitle("Pair Plot", y=1.02, fontsize=12,
-                                       fontweight="bold", color="#0F172A")
+                                       fontweight="bold", color="#E2E8F0")
                         buf = io.BytesIO()
                         g.fig.savefig(buf, format="png", dpi=120,
-                                      bbox_inches="tight", facecolor="#FFFFFF")
+                                      bbox_inches="tight", facecolor="#0A0F1E")
                         buf.seek(0)
                         st.image(buf, use_container_width=True)
                         plt.close("all")
@@ -250,10 +284,11 @@ def eda_page():
                              color=cc_ if cc_ != "None" else None,
                              size=sz_ if sz_ != "None" else None,
                              trendline="ols" if tl_ else None,
-                             template="plotly_white", opacity=0.7,
+                             template="plotly_dark", opacity=0.7,
                              title=f"{yc} vs {xc}",
-                             color_continuous_scale="teal")
-            fig.update_layout(height=520, plot_bgcolor="#F8FAFC", paper_bgcolor="#FFFFFF")
+                             color_continuous_scale="plasma",
+                             color_discrete_sequence=["#00D4FF"])
+            fig.update_layout(height=520, **_PLOTLY_DARK)
             st.plotly_chart(fig, use_container_width=True)
             corr_val = df[[xc, yc]].dropna().corr().iloc[0, 1]
             st.metric("Pearson Correlation", f"{corr_val:.4f}")

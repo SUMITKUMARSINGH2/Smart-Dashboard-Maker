@@ -6,6 +6,18 @@ import seaborn as sns
 import io
 
 
+_DARK_STYLE = {
+    "axes.facecolor": "#0A0F1E",
+    "figure.facecolor": "#0A0F1E",
+    "axes.edgecolor": "#1E293B",
+    "text.color": "#94A3B8",
+    "axes.labelcolor": "#64748B",
+    "xtick.color": "#64748B",
+    "ytick.color": "#64748B",
+    "grid.color": "#1E293B",
+}
+
+
 @st.cache_data(show_spinner=False)
 def _build_profile(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
@@ -34,33 +46,39 @@ def _build_profile(df: pd.DataFrame) -> pd.DataFrame:
 def _missing_chart(miss_vals: dict) -> bytes:
     miss_df = pd.DataFrame(list(miss_vals.items()), columns=["Column", "Missing %"])
     miss_df = miss_df.sort_values("Missing %", ascending=False)
-    fig, ax = plt.subplots(figsize=(10, max(3, len(miss_df) * 0.42)))
-    colors = ["#EF4444" if p > 30 else "#F59E0B" if p > 10 else "#0EA5E9"
-              for p in miss_df["Missing %"]]
-    ax.barh(miss_df["Column"][::-1], miss_df["Missing %"][::-1],
-            color=colors[::-1], height=0.6)
-    for i, (_, row) in enumerate(miss_df[::-1].iterrows()):
-        ax.text(row["Missing %"] + 0.3, i, f"{row['Missing %']:.1f}%",
-                va="center", fontsize=9, color="#334155")
-    ax.set_xlabel("Missing %", color="#64748B")
-    ax.set_title("Missing Values by Column", fontsize=12, fontweight="bold", color="#0F172A")
-    ax.tick_params(colors="#64748B")
-    for sp in ax.spines.values():
-        sp.set_edgecolor("#E2E8F0")
-    ax.set_facecolor("#F8FAFC")
-    fig.patch.set_facecolor("#FFFFFF")
-    ax.set_xlim(0, miss_df["Missing %"].max() * 1.18)
-    plt.tight_layout()
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png", dpi=150, bbox_inches="tight")
-    buf.seek(0)
-    plt.close()
-    return buf.read()
+    with sns.axes_style("dark", _DARK_STYLE):
+        fig, ax = plt.subplots(figsize=(10, max(3, len(miss_df) * 0.42)))
+        fig.patch.set_facecolor("#0A0F1E")
+        colors = ["#FF006E" if p > 30 else "#F59E0B" if p > 10 else "#00D4FF"
+                  for p in miss_df["Missing %"]]
+        ax.barh(miss_df["Column"][::-1], miss_df["Missing %"][::-1],
+                color=colors[::-1], height=0.6)
+        for i, (_, row) in enumerate(miss_df[::-1].iterrows()):
+            ax.text(row["Missing %"] + 0.3, i, f"{row['Missing %']:.1f}%",
+                    va="center", fontsize=9, color="#94A3B8")
+        ax.set_xlabel("Missing %", color="#64748B")
+        ax.set_title("Missing Values by Column", fontsize=12, fontweight="bold", color="#E2E8F0")
+        ax.tick_params(colors="#64748B")
+        for sp in ax.spines.values():
+            sp.set_edgecolor("#1E293B")
+        ax.set_facecolor("#0A0F1E")
+        ax.set_xlim(0, miss_df["Missing %"].max() * 1.18)
+        plt.tight_layout()
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#0A0F1E")
+        buf.seek(0)
+        plt.close()
+        return buf.read()
 
 
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
-                unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class='page-header'>
+        <div class='page-header-eyebrow'>// data profiling</div>
+        <h2>{title}</h2>
+        <div class='page-header-bar'></div>
+        <p>{sub}</p>
+    </div>""", unsafe_allow_html=True)
 
 
 def profiling_page():
@@ -130,22 +148,24 @@ def profiling_page():
                 })
                 st.dataframe(vc_df, use_container_width=True)
             with col_b:
-                SEABORN_STYLE = {
-                    "axes.facecolor": "#F8FAFC", "figure.facecolor": "#FFFFFF",
-                    "axes.edgecolor": "#E2E8F0",
-                }
-                with sns.axes_style("white", SEABORN_STYLE):
+                with sns.axes_style("dark", _DARK_STYLE):
                     fig, ax = plt.subplots(figsize=(6, max(3, len(vc) * 0.4)))
-                    palette = sns.color_palette("mako", len(vc))
+                    fig.patch.set_facecolor("#0A0F1E")
+                    ax.set_facecolor("#0A0F1E")
+                    palette = sns.color_palette(["#00D4FF", "#7C3AED", "#FF006E",
+                                                  "#10B981", "#F59E0B", "#0EA5E9",
+                                                  "#A855F7", "#14B8A6", "#F97316",
+                                                  "#EC4899"], len(vc))
                     sns.barplot(x=vc.values, y=vc.index, palette=palette, ax=ax)
                     ax.set_title(f"Top values: {selected}", fontsize=10,
-                                 fontweight="bold", color="#0F172A")
+                                 fontweight="bold", color="#E2E8F0")
                     ax.set_xlabel("Count", color="#64748B")
                     ax.tick_params(colors="#64748B")
-                    fig.patch.set_facecolor("#FFFFFF")
+                    for sp in ax.spines.values():
+                        sp.set_edgecolor("#1E293B")
                     plt.tight_layout()
                     buf = io.BytesIO()
-                    plt.savefig(buf, format="png", dpi=150, bbox_inches="tight")
+                    plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#0A0F1E")
                     buf.seek(0)
                     st.image(buf, use_container_width=True)
                     plt.close()

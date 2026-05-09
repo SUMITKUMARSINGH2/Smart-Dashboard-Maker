@@ -4,10 +4,25 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 
+_PLOTLY_DARK = dict(
+    paper_bgcolor="#0A0F1E",
+    plot_bgcolor="#0D1526",
+    font=dict(color="#94A3B8", family="Space Grotesk"),
+    xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+    yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+    hovermode="x unified",
+    title_font=dict(size=14, color="#E2E8F0"),
+)
+
 
 def _header(title, sub):
-    st.markdown(f"<div class='page-header'><h2>{title}</h2><p>{sub}</p></div>",
-                unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class='page-header'>
+        <div class='page-header-eyebrow'>// time series analysis</div>
+        <h2>{title}</h2>
+        <div class='page-header-bar'></div>
+        <p>{sub}</p>
+    </div>""", unsafe_allow_html=True)
 
 
 @st.cache_data(show_spinner=False)
@@ -79,10 +94,6 @@ def timeseries_page():
     st.markdown("<br>", unsafe_allow_html=True)
     tab1, tab2, tab3, tab4 = st.tabs(["Trend", "Rolling Average", "Periodicity", "Growth Rate"])
 
-    LAYOUT = dict(plot_bgcolor="#F8FAFC", paper_bgcolor="#FFFFFF",
-                  xaxis=dict(gridcolor="#F1F5F9"), yaxis=dict(gridcolor="#F1F5F9"),
-                  hovermode="x unified", font=dict(color="#334155"))
-
     with tab1:
         add_trend = st.checkbox("OLS trend line", True)
         fill = st.checkbox("Fill area under curve", False)
@@ -91,9 +102,9 @@ def timeseries_page():
         fig.add_trace(go.Scatter(
             x=temp["Date"], y=temp["Value"],
             mode="lines+markers" if len(temp) < 80 else "lines",
-            name=value_col, line=dict(color="#0EA5E9", width=2),
+            name=value_col, line=dict(color="#00D4FF", width=2),
             fill="tozeroy" if fill else None,
-            fillcolor="rgba(14,165,233,0.12)" if fill else None,
+            fillcolor="rgba(0,212,255,0.08)" if fill else None,
         ))
         if add_trend and len(temp) >= 2:
             xn = np.arange(len(temp))
@@ -101,24 +112,24 @@ def timeseries_page():
             fig.add_trace(go.Scatter(
                 x=temp["Date"], y=np.poly1d(z)(xn),
                 mode="lines", name="Trend",
-                line=dict(color="#F59E0B", width=2, dash="dash"),
+                line=dict(color="#FF006E", width=2, dash="dash"),
             ))
         fig.update_layout(title=f"{value_col} over Time", height=460,
-                          xaxis_title="Date", yaxis_title=value_col, **LAYOUT)
+                          xaxis_title="Date", yaxis_title=value_col, **_PLOTLY_DARK)
         st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
         windows = st.multiselect("Rolling window(s)", [7, 14, 30, 60, 90, 180, 365], default=[7, 30])
         fig2 = go.Figure()
         fig2.add_trace(go.Scatter(x=temp["Date"], y=temp["Value"], mode="lines",
-                                  name="Actual", opacity=0.35, line=dict(color="#0EA5E9")))
-        colors = ["#F59E0B", "#10B981", "#8B5CF6", "#EF4444", "#06B6D4"]
+                                  name="Actual", opacity=0.25, line=dict(color="#64748B")))
+        colors = ["#00D4FF", "#A855F7", "#10B981", "#FF006E", "#F59E0B"]
         for w, color in zip(windows, colors):
             rolled = temp["Value"].rolling(window=w, min_periods=1).mean()
             fig2.add_trace(go.Scatter(x=temp["Date"], y=rolled, mode="lines",
                                        name=f"{w}-period MA", line=dict(color=color, width=2)))
         fig2.update_layout(title="Rolling Average Comparison", height=460,
-                           xaxis_title="Date", yaxis_title=value_col, **LAYOUT)
+                           xaxis_title="Date", yaxis_title=value_col, **_PLOTLY_DARK)
         st.plotly_chart(fig2, use_container_width=True)
 
     with tab3:
@@ -133,9 +144,9 @@ def timeseries_page():
         agg_p.columns = [period, "Mean", "Sum", "Count"]
 
         fig3 = px.bar(agg_p, x=period, y="Mean", title=f"Avg {value_col} by {period}",
-                      template="plotly_white", color="Mean",
-                      color_continuous_scale="Blues", text_auto=".2s")
-        fig3.update_layout(height=400, plot_bgcolor="#F8FAFC", paper_bgcolor="#FFFFFF")
+                      template="plotly_dark", color="Mean",
+                      color_continuous_scale=["#7C3AED", "#00D4FF"], text_auto=".2s")
+        fig3.update_layout(height=400, **_PLOTLY_DARK)
         st.plotly_chart(fig3, use_container_width=True)
         st.dataframe(agg_p.round(3), use_container_width=True)
 
@@ -143,14 +154,14 @@ def timeseries_page():
         if len(temp) >= 2:
             temp3 = temp.copy()
             temp3["PctChange"] = temp3["Value"].pct_change() * 100
-            colors_bar = ["#10B981" if v >= 0 else "#EF4444"
+            colors_bar = ["#10B981" if v >= 0 else "#FF006E"
                           for v in temp3["PctChange"].fillna(0)]
             fig4 = go.Figure()
             fig4.add_trace(go.Bar(x=temp3["Date"], y=temp3["PctChange"],
                                    marker_color=colors_bar, name="% Change"))
             fig4.update_layout(title=f"Period-over-Period % Change — {value_col}",
                                height=420, yaxis_title="% Change",
-                               xaxis_title="Date", **LAYOUT)
+                               xaxis_title="Date", **_PLOTLY_DARK)
             st.plotly_chart(fig4, use_container_width=True)
 
             total = ((temp3["Value"].iloc[-1] / temp3["Value"].iloc[0]) - 1) * 100
