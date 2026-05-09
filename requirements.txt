@@ -46,3 +46,14 @@ typing_extensions==4.15.0
 tzdata==2025.2
 urllib3==2.5.0
 watchdog==6.0.0
+altair==5.5.0
+fpdf==1.7.2
+kaleido==1.0.0
+numpy==2.3.2
+openpyxl
+pandas==2.3.2
+plotly==6.3.0
+reportlab==4.4.3
+streamlit==1.49.0
+streamlit-lottie==0.0.5
+streamlit-option-menu==0.4.0
