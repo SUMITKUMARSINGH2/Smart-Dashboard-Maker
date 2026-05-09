@@ -12,6 +12,7 @@ from modules.ml_insights import ml_insights_page
 from modules.nlq import nlq_page
 from modules.live_feed import live_feed_page
 from modules.annotations import annotations_page
+from modules.outliers import outliers_page
 from modules.privacy import privacy_page
 from modules.terms import terms_page
 from modules.cookies import cookies_page
@@ -396,6 +397,7 @@ _MAIN_PAGES = [
     ("◐", "Ask Your Data"),
     ("⟳", "Live Data Feed"),
     ("✎", "Annotations"),
+    ("◎", "Outlier Detection"),
     ("↓", "Export & Reports"),
 ]
 _LEGAL_PAGES = [
@@ -521,6 +523,7 @@ _ROUTES = {
     "Ask Your Data":    nlq_page,
     "Live Data Feed":   live_feed_page,
     "Annotations":      annotations_page,
+    "Outlier Detection": outliers_page,
     "Export & Reports": export_page,
     "Privacy Policy":   privacy_page,
     "Terms of Service": terms_page,
