@@ -342,6 +342,20 @@ st.markdown("""
     transform: none !important;
     box-shadow: none !important;
 }
+
+/* ── Hide the keyboard_arrow_right Material Icon on full-width sidebar buttons ── */
+[data-testid="stSidebar"] .stButton > button [data-testid="stButtonIcon"],
+[data-testid="stSidebar"] .stButton > button .material-icons,
+[data-testid="stSidebar"] .stButton > button .material-icons-sharp,
+[data-testid="stSidebar"] .stButton > button .material-icons-round,
+[data-testid="stSidebar"] .stButton > button span[class*="Icon"],
+[data-testid="stSidebar"] .stButton > button svg {
+    display: none !important;
+}
+/* Clip any icon text that still bleeds through */
+[data-testid="stSidebar"] .stButton > button {
+    overflow: hidden !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
