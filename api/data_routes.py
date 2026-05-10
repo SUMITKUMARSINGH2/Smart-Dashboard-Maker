@@ -6,6 +6,26 @@ from api.store import get_store, set_store
 
 data_bp = Blueprint("data", __name__, url_prefix="/api")
 
+# ── separator auto-detection ──────────────────────────────────────────────────
+def _smart_read_csv(raw, preferred_sep, enc):
+    """Parse CSV with preferred separator; if only 1 column results, try others."""
+    SEPS = [preferred_sep, ",", ";", "|", "\t"]
+    seen = set()
+    for sep in SEPS:
+        if sep in seen:
+            continue
+        seen.add(sep)
+        try:
+            df = pd.read_csv(io.BytesIO(raw), sep=sep, encoding=enc, nrows=5)
+            if df.shape[1] > 1:
+                # Re-read the full file with the winning separator
+                full_df = pd.read_csv(io.BytesIO(raw), sep=sep, encoding=enc)
+                return full_df, sep
+        except Exception:
+            continue
+    # Fallback: return whatever the preferred sep gives (even if 1 col)
+    return pd.read_csv(io.BytesIO(raw), sep=preferred_sep, encoding=enc), preferred_sep
+
 # ── helpers ──────────────────────────────────────────────────────────────────
 def _df_safe(df, max_rows=500):
     d = df.copy()
@@ -42,7 +62,7 @@ def api_upload():
         sep = request.form.get("sep", ",")
         enc = request.form.get("encoding", "utf-8")
         if ext == "csv":
-            df = pd.read_csv(io.BytesIO(raw), sep=sep, encoding=enc)
+            df, sep = _smart_read_csv(raw, sep, enc)
         elif ext in ("xls", "xlsx"):
             df = pd.read_excel(io.BytesIO(raw))
         elif ext == "json":
@@ -65,6 +85,7 @@ def api_upload():
             preview=_df_safe(df, 100),
             dtypes={c: str(df[c].dtype) for c in df.columns},
             missing={c: int(df[c].isna().sum()) for c in df.columns},
+            detected_sep=sep,
         )
     except Exception as e:
         return jsonify(error=str(e), tb=traceback.format_exc()), 500

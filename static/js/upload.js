@@ -31,13 +31,25 @@ async function doUpload() {
   if (!selectedFile) return;
   const fd = new FormData();
   fd.append("file", selectedFile);
-  fd.append("sep", document.getElementById("sepSel").value);
+  const chosenSep = document.getElementById("sepSel").value;
+  fd.append("sep", chosenSep);
   fd.append("encoding", document.getElementById("encSel").value);
   try {
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     const data = await res.json();
     if (!res.ok) { toast(data.error || "Upload failed", "error"); return; }
-    toast(`Loaded: ${data.rows.toLocaleString()} rows × ${data.cols} cols`, "success");
+
+    // Notify user if separator was auto-detected as something different
+    const sepNames = { ",": "comma", ";": "semicolon", "|": "pipe", "\t": "tab" };
+    if (data.detected_sep && data.detected_sep !== chosenSep) {
+      const detected = sepNames[data.detected_sep] || data.detected_sep;
+      toast(`Auto-detected separator: ${detected} — parsed ${data.cols} columns`, "info", 5000);
+      // Sync the dropdown to show what was actually used
+      const sel = document.getElementById("sepSel");
+      for (const opt of sel.options) { if (opt.value === data.detected_sep) { opt.selected = true; break; } }
+    } else {
+      toast(`Loaded: ${data.rows.toLocaleString()} rows × ${data.cols} cols`, "success");
+    }
     showPreview(data);
   } catch (e) {
     toast("Upload error: " + e.message, "error");

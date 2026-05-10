@@ -264,7 +264,12 @@ a:hover { text-decoration: underline; }
   transition: border-color var(--transition);
 }
 .form-control:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,.1); }
-select.form-control { cursor: pointer; }
+select.form-control { cursor: pointer; appearance: auto; }
+select.form-control option,
+select.form-control optgroup { background: #111827; color: #E2E8F0; }
+select.form-control option:checked,
+select.form-control option:focus,
+select.form-control option:hover { background: #1E3A5F; color: #00D4FF; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; }
 
