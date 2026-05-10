@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 from styles import DARK_CSS, SIDEBAR_CSS
+from shared_store import get_meta as bridge_meta, load_shared, bridge_exists
 
 st.set_page_config(
     page_title="DataViz Pro",
@@ -48,6 +49,29 @@ with st.sidebar:
           <div class="ds-card-stats">Upload to get started</div>
         </div>
         """, unsafe_allow_html=True)
+
+    # Bridge sync — show if Flask has data we haven't loaded yet
+    if bridge_exists():
+        meta = bridge_meta()
+        if meta and meta.get("source") == "flask":
+            bridge_file = meta.get("filename", "")
+            session_file = st.session_state.get("filename", "")
+            if bridge_file != session_file:
+                st.markdown(f"""
+                <div style="background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+                            border-radius:6px;padding:.5rem .75rem;margin:.5rem 0;
+                            font-size:.75rem;color:#94A3B8;">
+                  <span style="color:#00D4FF;">⟳</span>
+                  Flask: <b style="color:#E2E8F0;">{bridge_file}</b>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("Sync from Flask", use_container_width=True, key="sidebar_sync_btn"):
+                    df_bridge, _ = load_shared()
+                    if df_bridge is not None:
+                        st.session_state["raw_data"]   = df_bridge.copy()
+                        st.session_state["clean_data"] = df_bridge.copy()
+                        st.session_state["filename"]   = bridge_file
+                        st.rerun()
 
     # Nav
     nav_override = st.session_state.pop("nav", None)

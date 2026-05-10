@@ -1,10 +1,38 @@
 import streamlit as st
 import pandas as pd
 from styles import DARK_CSS, section_header, kpi_row_html
+from shared_store import save_shared, load_shared, get_meta as bridge_meta, bridge_exists
 
 def file_upload():
     st.markdown(DARK_CSS, unsafe_allow_html=True)
     st.markdown(section_header("⬆", "Upload Data", "Supports CSV, Excel, JSON, Parquet, TSV"), unsafe_allow_html=True)
+
+    # Bridge banner — sync from Flask if available
+    if bridge_exists():
+        meta = bridge_meta()
+        if meta and meta.get("source") == "flask":
+            bridge_file = meta.get("filename", "")
+            session_file = st.session_state.get("filename", "")
+            if bridge_file != session_file:
+                c1, c2 = st.columns([5, 1])
+                with c1:
+                    st.markdown(f"""
+                    <div style="background:linear-gradient(90deg,rgba(124,58,237,.1),rgba(0,212,255,.07));
+                                border:1px solid rgba(0,212,255,.2);border-radius:7px;
+                                padding:.55rem .9rem;font-size:.82rem;color:#CBD5E1;">
+                      <span style="color:#00D4FF;">⟳</span>
+                      Flask loaded <b style="color:#E2E8F0;">{bridge_file}</b>
+                      ({meta.get('rows',0):,} rows). Click to sync.
+                    </div>
+                    """, unsafe_allow_html=True)
+                with c2:
+                    if st.button("Sync", use_container_width=True, key="filesin_sync_btn"):
+                        df_b, _ = load_shared()
+                        if df_b is not None:
+                            st.session_state["raw_data"]   = df_b.copy()
+                            st.session_state["clean_data"] = df_b.copy()
+                            st.session_state["filename"]   = bridge_file
+                            st.rerun()
 
     st.markdown("""
     <div style="background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.15);
@@ -33,6 +61,7 @@ def file_upload():
                 st.session_state["raw_data"] = df.copy()
                 st.session_state["clean_data"] = df.copy()
                 st.session_state["filename"] = f"{sample_choice}.csv"
+                save_shared(df, f"{sample_choice}.csv", source="streamlit")
                 st.success(f"✅ Loaded '{sample_choice}' — {df.shape[0]:,} rows, {df.shape[1]} cols")
                 st.rerun()
             except Exception as e:
@@ -69,6 +98,7 @@ def file_upload():
                 st.session_state["raw_data"] = df.copy()
                 st.session_state["clean_data"] = df.copy()
                 st.session_state["filename"] = uploaded.name
+                save_shared(df, uploaded.name, source="streamlit")
 
             except Exception as e:
                 st.error(f"Failed to read file: {e}")

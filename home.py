@@ -1,11 +1,44 @@
 import streamlit as st
 from styles import DARK_CSS, SIDEBAR_CSS, section_header, kpi_row_html, badge
+from shared_store import load_shared, get_meta as bridge_meta, bridge_exists
 
 def home_page():
     st.markdown(DARK_CSS + SIDEBAR_CSS, unsafe_allow_html=True)
     st.markdown(section_header("⬡", "DataViz Pro", "Advanced no-code data analytics platform"), unsafe_allow_html=True)
 
     has_data = "clean_data" in st.session_state and st.session_state["clean_data"] is not None
+
+    # ── Bridge sync banner ─────────────────────────────────────────────────────
+    if bridge_exists():
+        meta = bridge_meta()
+        if meta:
+            session_file = st.session_state.get("filename", "")
+            bridge_file  = meta.get("filename", "")
+            bridge_src   = meta.get("source", "")
+            bridge_rows  = meta.get("rows", 0)
+
+            # Show banner only when Flask uploaded something we don't have yet
+            if bridge_src == "flask" and bridge_file != session_file:
+                st.markdown(f"""
+                <div style="background:linear-gradient(90deg,rgba(124,58,237,.12),rgba(0,212,255,.08));
+                            border:1px solid rgba(0,212,255,.22);border-radius:8px;
+                            padding:.65rem 1rem;margin-bottom:1rem;
+                            display:flex;align-items:center;gap:.6rem;font-size:.83rem;color:#CBD5E1;">
+                  <span style="color:#00D4FF;font-size:1rem;">⟳</span>
+                  <span>Flask has loaded <b style="color:#E2E8F0;">{bridge_file}</b>
+                        ({bridge_rows:,} rows). Sync it into Streamlit?</span>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button(f"⟳  Sync \"{bridge_file}\" from Flask", use_container_width=False):
+                    df, _ = load_shared()
+                    if df is not None:
+                        st.session_state["raw_data"]   = df.copy()
+                        st.session_state["clean_data"] = df.copy()
+                        st.session_state["filename"]   = bridge_file
+                        st.rerun()
+                    else:
+                        st.error("Could not read bridge file.")
+    # ──────────────────────────────────────────────────────────────────────────
 
     # Hero
     if not has_data:

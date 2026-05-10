@@ -84,6 +84,22 @@
       </div>
     </header>
 
+    <!-- Bridge sync banner (shown when Streamlit has newer data) -->
+    <div id="bridgeBanner" style="display:none;background:linear-gradient(90deg,rgba(124,58,237,.15),rgba(0,212,255,.1));
+         border-bottom:1px solid rgba(0,212,255,.25);padding:.55rem 1.4rem;
+         display:none;align-items:center;gap:.75rem;font-size:.82rem;color:#CBD5E1;">
+      <span style="color:#00D4FF;font-size:.95rem;">⟳</span>
+      <span id="bridgeBannerText">Streamlit has uploaded data.</span>
+      <button id="bridgeSyncBtn" onclick="syncFromBridge()"
+        style="margin-left:.25rem;padding:.25rem .75rem;background:rgba(0,212,255,.15);
+               border:1px solid rgba(0,212,255,.35);border-radius:5px;color:#00D4FF;
+               font-size:.78rem;cursor:pointer;font-weight:600;">
+        Sync here ↗
+      </button>
+      <button onclick="document.getElementById('bridgeBanner').style.display='none'"
+        style="margin-left:auto;background:none;border:none;color:#475569;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+
     <!-- Page content -->
     <main class="page-content">
       {% block content %}{% endblock %}
@@ -94,6 +110,45 @@
   <div id="toastContainer"></div>
 
   <script src="/static/js/app.js"></script>
+  <script>
+  (function checkBridge() {
+    const flaskFile = document.querySelector('.ds-badge:not(.ds-badge-empty) .ds-badge-name')?.textContent?.trim();
+    fetch('/api/bridge-meta')
+      .then(r => r.json())
+      .then(meta => {
+        if (!meta.exists) return;
+        const bridgeFile = meta.filename;
+        const bridgeSrc  = meta.source;
+        if (bridgeSrc === 'streamlit' && bridgeFile !== flaskFile) {
+          const banner = document.getElementById('bridgeBanner');
+          document.getElementById('bridgeBannerText').textContent =
+            `Streamlit uploaded "${bridgeFile}" (${(meta.rows||0).toLocaleString()} rows). Sync it here?`;
+          banner.style.display = 'flex';
+        }
+      })
+      .catch(() => {});
+  })();
+
+  function syncFromBridge() {
+    const btn = document.getElementById('bridgeSyncBtn');
+    btn.textContent = 'Syncing…';
+    btn.disabled = true;
+    fetch('/api/sync-from-bridge', { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          window._showToast && window._showToast(`✓ Synced "${data.filename}" from Streamlit`, 'success');
+          document.getElementById('bridgeBanner').style.display = 'none';
+          setTimeout(() => location.reload(), 800);
+        } else {
+          btn.textContent = 'Sync here ↗';
+          btn.disabled = false;
+          window._showToast && window._showToast('Sync failed: ' + data.error, 'error');
+        }
+      })
+      .catch(() => { btn.textContent = 'Sync here ↗'; btn.disabled = false; });
+  }
+  </script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
