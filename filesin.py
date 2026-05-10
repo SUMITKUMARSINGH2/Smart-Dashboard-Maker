@@ -35,11 +35,11 @@ def file_upload():
                             st.rerun()
 
     st.markdown("""
-    <div style="background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.15);
+    <div style="background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15);
                 border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;
-                color:#94A3B8;font-size:.88rem;line-height:1.6;">
-      <b style="color:#00D4FF;">Supported formats:</b> CSV · Excel (.xlsx, .xls) · JSON · Parquet (.parquet)<br>
-      <b style="color:#00D4FF;">Tips:</b> For large files, ensure clean column headers. UTF-8 encoding is recommended.
+                color:#6b7280;font-size:.86rem;line-height:1.7;">
+      <b style="color:#38bdf8;">Supported formats:</b> CSV · Excel (.xlsx, .xls) · JSON · Parquet (.parquet)<br>
+      <b style="color:#38bdf8;">Tips:</b> For large files, ensure clean column headers. UTF-8 encoding is recommended.
     </div>
     """, unsafe_allow_html=True)
 

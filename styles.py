@@ -118,32 +118,75 @@ p, span, label { color: var(--text) !important; }
   font-weight: 600 !important;
 }
 
-/* Inputs */
+/* Inputs & Selects — force dark everywhere */
 .stTextInput input, .stTextArea textarea,
-[data-baseweb="select"] div, [data-baseweb="input"] input,
+[data-baseweb="input"] input,
 [data-baseweb="textarea"] textarea {
-  background: var(--surface2) !important;
-  border: 1px solid var(--border) !important;
+  background: #161b27 !important;
+  border: 1px solid #1f2937 !important;
   border-radius: 8px !important;
-  color: var(--text) !important;
+  color: #e8eaf6 !important;
 }
 .stTextInput input:focus, .stTextArea textarea:focus {
   border-color: #38bdf8 !important;
   box-shadow: 0 0 0 2px rgba(56,189,248,.12) !important;
 }
-[data-baseweb="select"] { background: var(--surface2) !important; }
 
-/* File uploader */
-[data-testid="stFileUploader"] {
-  background: rgba(56,189,248,.03) !important;
-  border: 2px dashed rgba(56,189,248,.2) !important;
+/* Select boxes — every layer dark */
+[data-baseweb="select"] { background: #161b27 !important; border-radius: 8px !important; }
+[data-baseweb="select"] > div { background: #161b27 !important; border: 1px solid #1f2937 !important; border-radius: 8px !important; color: #e8eaf6 !important; }
+[data-baseweb="select"] input { background: #161b27 !important; color: #e8eaf6 !important; }
+[data-baseweb="select"] span { color: #e8eaf6 !important; }
+[data-baseweb="select"] svg { fill: #6b7280 !important; }
+
+/* Dropdown popover/menu */
+[data-baseweb="popover"] { background: #0e1117 !important; border: 1px solid #1f2937 !important; border-radius: 10px !important; box-shadow: 0 8px 32px rgba(0,0,0,.6) !important; }
+[data-baseweb="menu"] { background: #0e1117 !important; }
+[data-baseweb="menu"] ul { background: #0e1117 !important; padding: 4px !important; }
+li[role="option"] { background: #0e1117 !important; color: #e8eaf6 !important; border-radius: 6px !important; }
+li[role="option"]:hover { background: #161b27 !important; }
+li[role="option"][aria-selected="true"] { background: rgba(56,189,248,.12) !important; color: #38bdf8 !important; }
+
+/* Number input */
+[data-baseweb="input"] { background: #161b27 !important; border: 1px solid #1f2937 !important; border-radius: 8px !important; }
+[data-testid="stNumberInput"] input { background: #161b27 !important; color: #e8eaf6 !important; }
+[data-testid="stNumberInput"] button { background: #1f2937 !important; color: #6b7280 !important; border: none !important; }
+
+/* Checkbox & Radio */
+[data-testid="stCheckbox"] label span, [data-testid="stRadio"] label span { color: #e8eaf6 !important; }
+[data-testid="stCheckbox"] input + span, [data-testid="stRadio"] input + span {
+  background: #161b27 !important; border-color: #1f2937 !important;
+}
+
+/* Slider track */
+[data-testid="stSlider"] [data-baseweb="slider"] div { background: #1f2937 !important; }
+[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] { background: #38bdf8 !important; border-color: #38bdf8 !important; }
+
+/* Tooltip */
+[data-baseweb="tooltip"] div { background: #0e1117 !important; border: 1px solid #1f2937 !important; color: #e8eaf6 !important; border-radius: 8px !important; }
+
+/* File uploader — kill all white */
+[data-testid="stFileUploader"] { background: transparent !important; border: none !important; }
+[data-testid="stFileUploaderDropzone"] {
+  background: #0e1117 !important;
+  border: 2px dashed rgba(56,189,248,.25) !important;
   border-radius: 12px !important;
-  padding: 2rem !important;
 }
-[data-testid="stFileUploader"]:hover {
+[data-testid="stFileUploaderDropzone"]:hover {
   border-color: #38bdf8 !important;
-  background: rgba(56,189,248,.06) !important;
+  background: rgba(56,189,248,.04) !important;
 }
+[data-testid="stFileUploaderDropzoneInstructions"] { color: #6b7280 !important; }
+[data-testid="stFileUploaderDropzoneInstructions"] span { color: #6b7280 !important; }
+[data-testid="stFileUploaderDropzoneInstructions"] svg { fill: #374151 !important; }
+[data-testid="stFileUploader"] button {
+  background: rgba(56,189,248,.1) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56,189,248,.3) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+[data-testid="stFileUploader"] small { color: #4b5563 !important; }
 
 /* Dataframe */
 [data-testid="stDataFrame"] {
