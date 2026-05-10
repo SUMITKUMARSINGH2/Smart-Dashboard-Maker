@@ -56,13 +56,19 @@ async function loadWordCloud(col) {
   }
 }
 
-// Tabs
+// Resize Plotly charts when text analytics tab becomes visible
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    tab.classList.add("active");
-    document.querySelector(`[data-panel="${tab.dataset.tab}"]`)?.classList.add("active");
+    const chartMap = {
+      "ta-freq": "freqChart",
+      "ta-sent": "sentHistChart",
+      "ta-pie":  "sentPieChart",
+    };
+    const chartId = chartMap[tab.dataset.tab];
+    if (chartId) {
+      const el = document.getElementById(chartId);
+      if (el && el.data) Plotly.relayout(el, {autosize: true});
+    }
   });
 });
 

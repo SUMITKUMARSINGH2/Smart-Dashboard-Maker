@@ -395,8 +395,9 @@ def api_annotations():
 def api_sample(name):
     try:
         if name == "sales":
-            # Load local sample file
-            df = pd.read_csv("../../../sample_sales_data.csv")
+            import os
+            _base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            df = pd.read_csv(os.path.join(_base, "..", "sample_sales_data.csv"))
         else:
             import seaborn as sns
             df = sns.load_dataset(name)

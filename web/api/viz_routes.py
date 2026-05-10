@@ -21,8 +21,6 @@ def _layout(title=""):
         paper_bgcolor="#0D1528", plot_bgcolor="#0D1528",
         font=dict(color="#94A3B8", family="Space Grotesk, sans-serif"),
         margin=dict(l=40, r=20, t=50, b=40),
-        xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
-        yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94A3B8")),
     )
 
@@ -146,10 +144,16 @@ def api_chart_build():
             else:
                 fig = px.bar(df, x=x, y=y, **clr_kw, color_discrete_sequence=PALETTE)
         elif chart_type == "histogram":
+            if not x:
+                return jsonify(error="Histogram requires an X column"), 400
             fig = px.histogram(df, x=x, nbins=bins, color_discrete_sequence=PALETTE, **clr_kw)
         elif chart_type == "box":
+            if not x and not y:
+                return jsonify(error="Box Plot requires at least an X or Y column"), 400
             fig = px.box(df, x=x, y=y, **clr_kw, color_discrete_sequence=PALETTE)
         elif chart_type == "violin":
+            if not x and not y:
+                return jsonify(error="Violin Plot requires at least an X or Y column"), 400
             fig = px.violin(df, x=x, y=y, **clr_kw, color_discrete_sequence=PALETTE, box=True)
         elif chart_type == "pie":
             vc = df[x].value_counts().head(15) if x else pd.Series()
@@ -184,6 +188,8 @@ def api_chart_build():
         elif chart_type == "strip":
             fig = px.strip(df, x=x, y=y, **clr_kw, color_discrete_sequence=PALETTE)
         elif chart_type == "ecdf":
+            if not x:
+                return jsonify(error="ECDF requires an X column"), 400
             fig = px.ecdf(df, x=x, color_discrete_sequence=PALETTE)
         elif chart_type == "hexbin":
             if x and y:
@@ -360,18 +366,6 @@ def _nlq_engine(df, q):
         return {"type":"table","answer":"Summary statistics","data":desc.reset_index().to_dict(orient="records"),"cols":["index"]+num_cols[:5]}
 
     return {"type":"text","answer":"I couldn't interpret that query. Try: 'show top 10', 'average of <col>', 'count rows where <col> is <val>', 'correlation', 'distribution of <col>'"}
-
-def fig_json(fig):
-    return json.loads(json.dumps(fig, cls=PlotlyJSONEncoder))
-
-def _layout(title=""):
-    return dict(
-        title=dict(text=title, font=dict(color="#E2E8F0", size=16)),
-        paper_bgcolor="#0D1528", plot_bgcolor="#0D1528",
-        font=dict(color="#94A3B8", family="Space Grotesk, sans-serif"),
-        margin=dict(l=40, r=20, t=50, b=40),
-        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94A3B8")),
-    )
 
 # ── Live Feed ──────────────────────────────────────────────────────────────────
 @viz_bp.route("/live/connect", methods=["POST"])

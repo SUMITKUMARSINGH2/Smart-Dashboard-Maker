@@ -77,9 +77,12 @@ def api_forecast():
         ))
         fig.add_vline(x=str(series_df.index[-1]), line_dash="dot",
                       line_color=PALETTE[3], opacity=0.6)
-        layout = _layout(f"ARIMA({p},{d},{q}) Forecast — {val_col}")
-        layout["xaxis"]["rangeslider"] = {"visible": True, "bgcolor": "#060B1A"}
-        fig.update_layout(**layout)
+        fig.update_layout(
+            **_layout(f"ARIMA({p},{d},{q}) Forecast — {val_col}"),
+            xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B",
+                       rangeslider=dict(visible=True, bgcolor="#060B1A")),
+            yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+        )
         # Summary stats
         summary = {
             "aic": round(float(result.aic), 2),

@@ -66,14 +66,21 @@ async function runHyp() {
   </div>`;
 }
 
-// Tab switching
+// Resize Plotly charts when tab becomes visible
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    tab.classList.add("active");
-    const panel = document.querySelector(`[data-panel="${tab.dataset.tab}"]`);
-    if (panel) panel.classList.add("active");
+    const panelId = tab.dataset.tab;
+    const chartMap = {
+      "eda-corr": "corrChart",
+      "eda-dist": "distChart",
+      "eda-box":  "boxChart",
+      "eda-scatter": "scatterChart",
+    };
+    const chartId = chartMap[panelId];
+    if (chartId) {
+      const el = document.getElementById(chartId);
+      if (el && el.data) Plotly.relayout(el, {autosize: true});
+    }
   });
 });
 
