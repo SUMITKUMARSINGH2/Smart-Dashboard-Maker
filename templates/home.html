@@ -3,78 +3,148 @@
 {% block page_title %}Home{% endblock %}
 
 {% block content %}
-<div class="hero">
-  <div class="hero-badge">⬡ Advanced Data Analytics Platform</div>
-  <h1>Turn Raw Data Into<br><span>Powerful Insights</span></h1>
-  <p>Upload any dataset and instantly explore, clean, visualize, and model your data with zero code required.</p>
-  <div class="hero-actions">
-    <a href="/upload" class="btn btn-primary btn-lg">Get Started →</a>
-    {% if ds_info %}
-    <a href="/dashboard" class="btn btn-ghost btn-lg">View Dashboard</a>
-    {% endif %}
-  </div>
-</div>
+<div class="content-wrap">
 
-<div class="feature-cards">
-  <a href="/upload" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">⬆</div>
-    <div class="feature-title">Smart Upload</div>
-    <div class="feature-desc">CSV, Excel, JSON, Parquet, TSV. Auto-detect types, separators, and encoding.</div>
-  </a>
-  <a href="/profiling" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">◎</div>
-    <div class="feature-title">Data Profiling</div>
-    <div class="feature-desc">Per-column statistics, missing value analysis, distributions, and data quality scores.</div>
-  </a>
-  <a href="/cleaning" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">✦</div>
-    <div class="feature-title">Data Cleaning</div>
-    <div class="feature-desc">Remove duplicates, fill missing values, cast types, rename columns, filter rows.</div>
-  </a>
-  <a href="/eda" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">∿</div>
-    <div class="feature-title">EDA & Statistics</div>
-    <div class="feature-desc">Correlations, distributions, box plots, scatter, and hypothesis testing.</div>
-  </a>
-  <a href="/chart" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">▦</div>
-    <div class="feature-title">Chart Builder</div>
-    <div class="feature-desc">19 chart types: scatter, bar, pie, heatmap, treemap, funnel, gauge, and more.</div>
-  </a>
-  <a href="/dashboard" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">⚡</div>
-    <div class="feature-title">Auto Dashboard</div>
-    <div class="feature-desc">Automatically generated KPIs and smart charts based on your data structure.</div>
-  </a>
-  <a href="/timeseries" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">⏱</div>
-    <div class="feature-title">Time Series</div>
-    <div class="feature-desc">Trend analysis, rolling averages, seasonal decomposition, and growth rates.</div>
-  </a>
-  <a href="/ml" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">◈</div>
-    <div class="feature-title">ML Insights</div>
-    <div class="feature-desc">K-Means clustering, anomaly detection, feature importance, PCA dimensionality reduction.</div>
-  </a>
-  <a href="/nlq" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">◐</div>
-    <div class="feature-title">Ask Your Data</div>
-    <div class="feature-desc">Natural language queries — ask questions, get answers and charts instantly.</div>
-  </a>
-  <a href="/live_feed" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">⟳</div>
-    <div class="feature-title">Live Data Feed</div>
-    <div class="feature-desc">Connect to any live URL endpoint and stream real-time data with auto-refresh.</div>
-  </a>
-  <a href="/outliers" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">◎</div>
-    <div class="feature-title">Outlier Detection</div>
-    <div class="feature-desc">IQR, Z-score, and Modified Z-score methods with visual identification.</div>
-  </a>
-  <a href="/export" class="feature-card" style="text-decoration:none;color:inherit">
-    <div class="feature-icon">↓</div>
-    <div class="feature-title">Export & Reports</div>
-    <div class="feature-desc">CSV, Excel, JSON, Parquet, HTML reports, ZIP bundles, Power BI M-Query &amp; DAX.</div>
-  </a>
+  <div class="hero">
+    <div class="hero-badge">⬡ Advanced Data Analytics Platform</div>
+    <h1>Turn Raw Data Into<br><span>Powerful Insights</span></h1>
+    <p>Upload any dataset and instantly explore, clean, visualize, and model your data with zero code required.</p>
+    <div class="hero-actions">
+      <a href="/upload" class="btn btn-primary btn-lg">Get Started →</a>
+      {% if ds_info %}
+      <a href="/dashboard" class="btn btn-ghost btn-lg">View Dashboard</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if ds_info %}
+  <div class="home-dataset-strip">
+    <div class="ds-title">
+      <span style="color:var(--green)">●</span>
+      {{ ds_info.filename }}
+    </div>
+    <div class="ds-stats" id="homeKpis">
+      <div class="ds-stat-item">
+        <span class="ds-stat-val">{{ ds_info.rows }}</span>
+        <span class="ds-stat-lbl">Rows</span>
+      </div>
+      <div class="ds-stat-item">
+        <span class="ds-stat-val">{{ ds_info.cols }}</span>
+        <span class="ds-stat-lbl">Columns</span>
+      </div>
+      <div class="ds-stat-item">
+        <span class="ds-stat-val" id="homeNumCols">—</span>
+        <span class="ds-stat-lbl">Numeric</span>
+      </div>
+      <div class="ds-stat-item">
+        <span class="ds-stat-val" id="homeCatCols">—</span>
+        <span class="ds-stat-lbl">Categorical</span>
+      </div>
+      <div class="ds-stat-item">
+        <span class="ds-stat-val" id="homeMissing">—</span>
+        <span class="ds-stat-lbl">Missing</span>
+      </div>
+    </div>
+    <div class="ds-actions">
+      <a href="/profiling" class="btn btn-sm btn-ghost">Profile</a>
+      <a href="/cleaning" class="btn btn-sm btn-ghost">Clean</a>
+      <a href="/dashboard" class="btn btn-sm btn-primary">Dashboard</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="section-label">All Features</div>
+  <div class="feature-cards">
+    <a href="/upload" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">⬆</div>
+      <div class="feature-title">Smart Upload</div>
+      <div class="feature-desc">CSV, Excel, JSON, Parquet, TSV. Auto-detect types, separators, and encoding.</div>
+    </a>
+    <a href="/profiling" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">◎</div>
+      <div class="feature-title">Data Profiling</div>
+      <div class="feature-desc">Per-column statistics, missing value analysis, distributions, and data quality scores.</div>
+    </a>
+    <a href="/cleaning" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">✦</div>
+      <div class="feature-title">Data Cleaning</div>
+      <div class="feature-desc">Remove duplicates, fill missing values, cast types, rename columns, filter rows.</div>
+    </a>
+    <a href="/eda" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">∿</div>
+      <div class="feature-title">EDA & Statistics</div>
+      <div class="feature-desc">Correlations, distributions, box plots, scatter, and hypothesis testing.</div>
+    </a>
+    <a href="/chart" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">▦</div>
+      <div class="feature-title">Chart Builder</div>
+      <div class="feature-desc">19 chart types: scatter, bar, pie, heatmap, treemap, funnel, gauge, and more.</div>
+    </a>
+    <a href="/dashboard" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Auto Dashboard</div>
+      <div class="feature-desc">Automatically generated KPIs and smart charts based on your data structure.</div>
+    </a>
+    <a href="/timeseries" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">⏱</div>
+      <div class="feature-title">Time Series</div>
+      <div class="feature-desc">Trend analysis, rolling averages, seasonal decomposition, and growth rates.</div>
+    </a>
+    <a href="/ml" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">◈</div>
+      <div class="feature-title">ML Insights</div>
+      <div class="feature-desc">K-Means clustering, anomaly detection, feature importance, PCA dimensionality reduction.</div>
+    </a>
+    <a href="/forecasting" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">◑</div>
+      <div class="feature-title">Forecasting</div>
+      <div class="feature-desc">ARIMA, exponential smoothing, and seasonal decomposition forecasting.</div>
+    </a>
+    <a href="/regression" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">⌇</div>
+      <div class="feature-title">Regression</div>
+      <div class="feature-desc">Linear, polynomial, ridge, lasso regression with residual diagnostics.</div>
+    </a>
+    <a href="/nlq" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">◐</div>
+      <div class="feature-title">Ask Your Data</div>
+      <div class="feature-desc">Natural language queries — ask questions, get answers and charts instantly.</div>
+    </a>
+    <a href="/sqlquery" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">⌗</div>
+      <div class="feature-title">SQL Query</div>
+      <div class="feature-desc">Run SQL queries directly on your dataset using DuckDB engine.</div>
+    </a>
+    <a href="/outliers" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">◎</div>
+      <div class="feature-title">Outlier Detection</div>
+      <div class="feature-desc">IQR, Z-score, and Modified Z-score methods with visual identification.</div>
+    </a>
+    <a href="/textanalytics" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">❂</div>
+      <div class="feature-title">Text Analytics</div>
+      <div class="feature-desc">Word clouds, sentiment analysis, frequency analysis on text columns.</div>
+    </a>
+    <a href="/export" class="feature-card" style="text-decoration:none;color:inherit">
+      <div class="feature-icon">↓</div>
+      <div class="feature-title">Export & Reports</div>
+      <div class="feature-desc">CSV, Excel, JSON, Parquet, HTML reports, ZIP bundles, Power BI M-Query &amp; DAX.</div>
+    </a>
+  </div>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+{% if ds_info %}
+fetch('/api/dataset-info').then(r=>r.json()).then(d=>{
+  if (!d.loaded) return;
+  const missing = Object.values(d.missing||{}).reduce((a,b)=>a+b,0);
+  document.getElementById('homeNumCols').textContent = (d.numeric_cols||[]).length;
+  document.getElementById('homeCatCols').textContent = (d.cat_cols||[]).length;
+  document.getElementById('homeMissing').textContent = missing.toLocaleString();
+}).catch(()=>{});
+{% endif %}
+</script>
 {% endblock %}
