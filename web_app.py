@@ -9,29 +9,37 @@ from api.viz_routes import viz_bp
 from api.analysis_routes import analysis_bp
 from api.ml_routes import ml_bp
 from api.export_routes import export_bp
+from api.features_routes import features_bp
 
 app.register_blueprint(data_bp)
 app.register_blueprint(viz_bp)
 app.register_blueprint(analysis_bp)
 app.register_blueprint(ml_bp)
 app.register_blueprint(export_bp)
+app.register_blueprint(features_bp)
 
 PAGES = [
-    ("home",        "⬡", "Home"),
-    ("upload",      "⬆", "Upload Data"),
-    ("profiling",   "◎", "Data Profiling"),
-    ("cleaning",    "✦", "Data Cleaning"),
-    ("eda",         "∿", "EDA & Statistics"),
-    ("chart",       "▦", "Chart Builder"),
-    ("dashboard",   "⚡", "Auto Dashboard"),
-    ("timeseries",  "⏱", "Time Series"),
-    ("ml",          "◈", "ML Insights"),
-    ("nlq",         "◐", "Ask Your Data"),
-    ("live_feed",   "⟳", "Live Data Feed"),
-    ("annotations", "✎", "Annotations"),
-    ("outliers",    "◎", "Outlier Detection"),
-    ("comparison",  "⟺", "Data Comparison"),
-    ("export",      "↓", "Export & Reports"),
+    ("home",          "⬡", "Home"),
+    ("upload",        "⬆", "Upload Data"),
+    ("profiling",     "◎", "Data Profiling"),
+    ("cleaning",      "✦", "Data Cleaning"),
+    ("eda",           "∿", "EDA & Statistics"),
+    ("chart",         "▦", "Chart Builder"),
+    ("dashboard",     "⚡", "Auto Dashboard"),
+    ("timeseries",    "⏱", "Time Series"),
+    ("ml",            "◈", "ML Insights"),
+    ("forecasting",   "◑", "Forecasting"),
+    ("regression",    "⌇", "Regression"),
+    ("whatif",        "⟁", "What-If Simulator"),
+    ("textanalytics", "❂", "Text Analytics"),
+    ("validation",    "✔", "Data Validation"),
+    ("calculator",    "∑", "Column Calculator"),
+    ("nlq",           "◐", "Ask Your Data"),
+    ("live_feed",     "⟳", "Live Data Feed"),
+    ("annotations",   "✎", "Annotations"),
+    ("outliers",      "◎", "Outlier Detection"),
+    ("comparison",    "⟺", "Data Comparison"),
+    ("export",        "↓", "Export & Reports"),
 ]
 
 LEGAL_PAGES = [
@@ -113,6 +121,30 @@ def comparison():
 @app.route("/export")
 def export():
     return render_template("export.html", active="export")
+
+@app.route("/forecasting")
+def forecasting():
+    return render_template("forecasting.html", active="forecasting")
+
+@app.route("/whatif")
+def whatif():
+    return render_template("whatif.html", active="whatif")
+
+@app.route("/regression")
+def regression():
+    return render_template("regression.html", active="regression")
+
+@app.route("/textanalytics")
+def textanalytics():
+    return render_template("textanalytics.html", active="textanalytics")
+
+@app.route("/validation")
+def validation():
+    return render_template("validation.html", active="validation")
+
+@app.route("/calculator")
+def calculator():
+    return render_template("calculator.html", active="calculator")
 
 @app.route("/privacy")
 def privacy():

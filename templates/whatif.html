@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}What-If Simulator — DataViz Pro{% endblock %}
+{% block page_title %}What-If Simulator{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>What-If Simulator</h1>
+  <p>Adjust column multipliers with sliders and see how statistics change in real time</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div class="card">
+      <div class="card-title mb-2">Column Multipliers</div>
+      <p class="text-muted text-sm mb-2">Each slider multiplies that column's values by the given factor. 1.0 = no change.</p>
+      <div id="sliderContainer"></div>
+      <div style="display:flex;gap:.5rem;margin-top:1rem">
+        <button class="btn btn-primary" id="simulateBtn">Simulate</button>
+        <button class="btn btn-ghost" id="resetSimBtn">Reset All</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="card mb-2">
+        <div class="card-title mb-1">Impact Summary</div>
+        <div id="impactTable"><div class="text-muted text-sm">Run simulation to see results</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-1">Comparison Chart</div>
+        <div id="whatifChart" style="min-height:260px">
+          <div class="chart-placeholder">Run simulation to see chart</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/whatif.js"></script>
+{% endblock %}

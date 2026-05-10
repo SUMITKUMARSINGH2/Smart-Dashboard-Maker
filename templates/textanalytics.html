@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Text Analytics — DataViz Pro{% endblock %}
+{% block page_title %}Text Analytics{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Text Analytics</h1>
+  <p>Word clouds, sentiment analysis, and frequency analysis for text columns</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="card mb-2">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Select Text Column</div>
+        <div class="card-subtitle" id="textColStats"></div>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <select class="form-control" id="textCol" style="width:200px"><option>Loading…</option></select>
+        <button class="btn btn-primary" id="analyzeBtn">Analyze</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultsArea" class="hidden">
+    <!-- KPI row -->
+    <div class="grid-4 mb-2" id="textKpis"></div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="txt-wc">Word Cloud</div>
+      <div class="tab" data-tab="txt-freq">Word Frequency</div>
+      <div class="tab" data-tab="txt-sent">Sentiment</div>
+    </div>
+
+    <div class="tab-panel active" data-panel="txt-wc">
+      <div class="card">
+        <div class="card-title mb-1">Word Cloud</div>
+        <div id="wordcloudContainer" style="text-align:center;min-height:250px">
+          <div class="chart-placeholder">Generating word cloud…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="txt-freq">
+      <div class="card">
+        <div class="card-title mb-1">Top 30 Words</div>
+        <div class="chart-container" id="freqChart"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="txt-sent">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title mb-1">Sentiment Distribution</div>
+          <div id="sentPieChart" style="min-height:280px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title mb-1">Polarity Histogram</div>
+          <div id="sentHistChart" style="min-height:280px"></div>
+        </div>
+      </div>
+      <div class="card mt-1">
+        <div class="card-title mb-1">Sentiment Summary</div>
+        <div id="sentStats"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/textanalytics.js"></script>
+{% endblock %}

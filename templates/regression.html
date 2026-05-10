@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Regression Analysis — DataViz Pro{% endblock %}
+{% block page_title %}Regression Analysis{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Regression Analysis</h1>
+  <p>Linear, polynomial, ridge &amp; lasso regression with residual diagnostics</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div class="card">
+      <div class="card-title mb-2">Configuration</div>
+
+      <div class="form-group">
+        <label class="form-label">Feature Columns X (hold Ctrl/Cmd for multiple)</label>
+        <select class="form-control" id="regXCols" multiple style="height:110px" data-type="numeric"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Column Y</label>
+        <select class="form-control" id="regYCol" data-type="numeric"><option>Loading…</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Model Type</label>
+          <select class="form-control" id="regModel">
+            <option value="linear">Linear Regression</option>
+            <option value="ridge">Ridge (L2)</option>
+            <option value="lasso">Lasso (L1)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Polynomial Degree</label>
+          <select class="form-control" id="regDegree">
+            <option value="1">1 — Linear</option>
+            <option value="2">2 — Quadratic</option>
+            <option value="3">3 — Cubic</option>
+            <option value="4">4 — Quartic</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="regBtn">Run Regression</button>
+    </div>
+
+    <div class="card" id="regMetrics" style="display:none">
+      <div class="card-title mb-1">Model Metrics</div>
+      <div id="regMetricsContent"></div>
+      <div class="mt-2">
+        <div class="text-muted text-xs mb-1">COEFFICIENTS (top 10)</div>
+        <div id="regCoeffs"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs mt-2">
+    <div class="tab active" data-tab="reg-fit">Actual vs Predicted</div>
+    <div class="tab" data-tab="reg-line">Fit Line</div>
+    <div class="tab" data-tab="reg-res">Residuals</div>
+    <div class="tab" data-tab="reg-rhist">Residuals Distribution</div>
+  </div>
+
+  <div class="tab-panel active" data-panel="reg-fit">
+    <div class="card"><div class="chart-container" id="regFitChart"><div class="chart-placeholder">Run regression to see results</div></div></div>
+  </div>
+  <div class="tab-panel" data-panel="reg-line">
+    <div class="card"><div class="chart-container" id="regLineChart"><div class="chart-placeholder">Available for single X column</div></div></div>
+  </div>
+  <div class="tab-panel" data-panel="reg-res">
+    <div class="card"><div class="chart-container" id="regResChart"><div class="chart-placeholder">Run regression to see residuals</div></div></div>
+  </div>
+  <div class="tab-panel" data-panel="reg-rhist">
+    <div class="card"><div class="chart-container" id="regRhistChart"><div class="chart-placeholder">Run regression to see residuals</div></div></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/regression.js"></script>
+{% endblock %}

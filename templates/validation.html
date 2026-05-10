@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Data Validation — DataViz Pro{% endblock %}
+{% block page_title %}Data Validation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Data Validation Rules</h1>
+  <p>Define rules for your columns and flag violations in the dataset</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div>
+      <div class="card mb-2">
+        <div class="card-title mb-2">Add Validation Rule</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Column</label>
+            <select class="form-control" id="valCol"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rule Type</label>
+            <select class="form-control" id="valRuleType" onchange="toggleRuleFields()">
+              <option value="range">Numeric Range</option>
+              <option value="pattern">Regex Pattern</option>
+              <option value="allowed_values">Allowed Values</option>
+              <option value="not_null">Not Null</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="rangeFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Min Value</label>
+              <input type="number" class="form-control" id="valMin" placeholder="e.g. 0" step="any">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Value</label>
+              <input type="number" class="form-control" id="valMax" placeholder="e.g. 120" step="any">
+            </div>
+          </div>
+        </div>
+
+        <div id="patternFields" class="hidden">
+          <div class="form-group">
+            <label class="form-label">Regex Pattern</label>
+            <input type="text" class="form-control" id="valPattern" placeholder="e.g. ^\d{4}-\d{2}-\d{2}$">
+          </div>
+        </div>
+
+        <div id="allowedFields" class="hidden">
+          <div class="form-group">
+            <label class="form-label">Allowed Values (comma-separated)</label>
+            <input type="text" class="form-control" id="valAllowed" placeholder="e.g. active, inactive, pending">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Rule Label (optional)</label>
+          <input type="text" class="form-control" id="valLabel" placeholder="e.g. Age must be 0–120">
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+            <input type="checkbox" id="valNotNull"> <span class="form-label" style="margin:0">Must not be null/empty</span>
+          </label>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="addRuleBtn">Add Rule</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Defined Rules</div>
+          <span class="badge badge-cyan" id="ruleCount">0 rules</span>
+        </div>
+        <div id="ruleList"><div class="text-muted text-sm">No rules added yet.</div></div>
+        <button class="btn btn-primary btn-block mt-2" id="checkBtn" disabled>Run Validation Check</button>
+      </div>
+    </div>
+
+    <div id="validationResults" class="hidden">
+      <div class="card mb-2" id="valSummaryCard">
+        <div class="card-title mb-1">Validation Summary</div>
+        <div id="valSummaryKpis" class="grid-2 mb-1"></div>
+        <div class="chart-container" id="valChart"></div>
+      </div>
+
+      <div class="card" id="valDetailCard">
+        <div class="card-title mb-1">Rule-by-Rule Results</div>
+        <div id="valDetailTable"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/validation.js"></script>
+{% endblock %}

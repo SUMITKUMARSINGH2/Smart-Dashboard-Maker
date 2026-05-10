@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Data Forecasting — DataViz Pro{% endblock %}
+{% block page_title %}Data Forecasting{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Data Forecasting</h1>
+  <p>ARIMA time-series forecasting with confidence intervals</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div class="card">
+      <div class="card-title mb-2">Forecast Configuration</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Date / Time Column</label>
+          <select class="form-control" id="fcDateCol"><option>Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Value Column</label>
+          <select class="form-control" id="fcValCol" data-type="numeric"><option>Loading…</option></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Forecast Periods</label>
+          <input type="number" class="form-control" id="fcPeriods" value="30" min="1" max="365">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Frequency</label>
+          <select class="form-control" id="fcFreq">
+            <option value="D">Daily</option>
+            <option value="W">Weekly</option>
+            <option value="M">Monthly</option>
+            <option value="H">Hourly</option>
+            <option value="T">Minute</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card mt-1" style="background:var(--bg);border-color:var(--border2)">
+        <div class="card-title text-sm mb-1">ARIMA Order (p, d, q)</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">p (AR)</label>
+            <input type="number" class="form-control" id="fcP" value="1" min="0" max="5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">d (diff)</label>
+            <input type="number" class="form-control" id="fcD" value="1" min="0" max="2">
+          </div>
+          <div class="form-group">
+            <label class="form-label">q (MA)</label>
+            <input type="number" class="form-control" id="fcQ" value="1" min="0" max="5">
+          </div>
+        </div>
+        <p class="text-muted text-xs">Start with (1,1,1) — increase p for more autocorrelation, d for non-stationarity</p>
+      </div>
+
+      <button class="btn btn-primary btn-block mt-2" id="fcBtn">Generate Forecast</button>
+    </div>
+
+    <div class="card" id="fcSummaryCard" style="display:none">
+      <div class="card-title mb-1">Forecast Summary</div>
+      <div id="fcSummary"></div>
+      <div class="alert alert-info mt-2 text-xs">
+        The shaded band shows the 95% confidence interval. The dotted line marks where the forecast begins.
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-2">
+    <div class="card-title mb-1">Forecast Chart</div>
+    <div class="chart-container" id="fcChart">
+      <div class="chart-placeholder">Configure and run a forecast above</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/forecasting.js"></script>
+{% endblock %}

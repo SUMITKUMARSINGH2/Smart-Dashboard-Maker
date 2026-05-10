@@ -19,3 +19,7 @@ streamlit-option-menu==0.4.0
 xlsxwriter
 flask
 flask-session
+pmdarima
+statsmodels
+textblob
+wordcloud

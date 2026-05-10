@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Column Calculator — DataViz Pro{% endblock %}
+{% block page_title %}Column Calculator{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Column Calculator</h1>
+  <p>Create new columns using mathematical expressions and transformations</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div>
+      <div class="card mb-2">
+        <div class="card-title mb-2">Expression Builder</div>
+
+        <div class="form-group">
+          <label class="form-label">Expression</label>
+          <textarea class="form-control" id="calcExpr" rows="3"
+            placeholder="e.g.  price * quantity&#10;  log(revenue + 1)&#10;  (age - 18) / 10&#10;  where(income > 50000, 'high', 'low')"
+            style="font-family:var(--mono);font-size:.88rem;resize:vertical"></textarea>
+          <div class="text-muted text-xs mt-1">Use column names directly. Available: log, sqrt, abs, exp, round, floor, ceil, sin, cos, where(condition, if_true, if_false)</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">New Column Name</label>
+          <input type="text" class="form-control" id="calcNewCol" placeholder="e.g. revenue_log">
+        </div>
+
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-ghost" id="previewBtn">Preview</button>
+          <button class="btn btn-primary" id="addColBtn">Add Column</button>
+        </div>
+      </div>
+
+      <div class="card mb-2">
+        <div class="card-title mb-1">Quick Expressions</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem" id="quickBtns"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-1">Available Columns</div>
+        <div id="colChips" style="display:flex;flex-wrap:wrap;gap:.3rem"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card mb-2" id="previewCard" style="display:none">
+        <div class="card-title mb-1">Preview — <span id="previewColName" class="text-cyan"></span></div>
+        <div id="previewStats"></div>
+        <div id="previewValues" class="mt-1"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Column History</div>
+          <span class="badge badge-cyan" id="calcHistCount">0 added</span>
+        </div>
+        <div id="calcHistory"><div class="text-muted text-sm">No columns added yet.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/calculator.js"></script>
+{% endblock %}
