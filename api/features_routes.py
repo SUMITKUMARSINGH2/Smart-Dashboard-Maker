@@ -549,3 +549,52 @@ def api_calc_cols():
         columns=list(df.columns),
         numeric_cols=df.select_dtypes(include="number").columns.tolist()
     )
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 7. SQL QUERY (DuckDB)
+# ══════════════════════════════════════════════════════════════════════════════
+@features_bp.route("/sql/query", methods=["POST"])
+def api_sql_query():
+    df = _df()
+    if df is None: return jsonify(error="No dataset"), 400
+    body = request.json or {}
+    sql = body.get("sql", "").strip()
+    if not sql: return jsonify(error="Empty query"), 400
+    # Block dangerous statements
+    sql_upper = sql.upper()
+    blocked = ["DROP ", "DELETE ", "INSERT ", "UPDATE ", "ALTER ", "CREATE ", "TRUNCATE ",
+               "EXEC ", "EXECUTE ", "PRAGMA ", "ATTACH ", "DETACH "]
+    for kw in blocked:
+        if kw in sql_upper:
+            return jsonify(error=f"Statement not allowed: {kw.strip()}. Only SELECT queries are permitted."), 400
+    try:
+        import duckdb
+        # Register the dataframe as "data" table in an in-memory DuckDB connection
+        con = duckdb.connect()
+        con.register("data", df)
+        result = con.execute(sql).fetchdf()
+        con.close()
+        columns = list(result.columns)
+        # Safely convert to JSON-serialisable list of dicts
+        rows = []
+        for _, row in result.iterrows():
+            record = {}
+            for col in columns:
+                val = row[col]
+                if pd.isna(val) if not isinstance(val, (list, dict)) else False:
+                    record[col] = None
+                elif hasattr(val, "item"):  # numpy scalar
+                    record[col] = val.item()
+                else:
+                    record[col] = val
+            rows.append(record)
+        numeric_cols = result.select_dtypes(include="number").columns.tolist()
+        return jsonify(
+            columns=columns,
+            rows=rows,
+            numeric_cols=numeric_cols,
+            n_rows=len(rows),
+            n_cols=len(columns),
+        )
+    except Exception as e:
+        return jsonify(error=str(e)), 400

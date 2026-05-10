@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}SQL Query — DataViz Pro{% endblock %}
+{% block page_title %}SQL Query{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>SQL Query</h1>
+  <p>Run SQL directly against your dataset — your table is always called <code class="mono" style="color:var(--cyan);background:var(--card);padding:.1rem .35rem;border-radius:4px">data</code></p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <!-- Schema sidebar + editor -->
+  <div class="grid-2" style="align-items:start;grid-template-columns:260px 1fr">
+
+    <!-- Schema panel -->
+    <div class="card" style="position:sticky;top:1rem">
+      <div class="card-title mb-1">Table: <span class="text-cyan">data</span></div>
+      <div id="schemaList" style="max-height:420px;overflow-y:auto"></div>
+      <div class="mt-2">
+        <div class="text-muted text-xs mb-1">QUICK QUERIES</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem" id="quickQueries"></div>
+      </div>
+    </div>
+
+    <!-- Editor + results -->
+    <div>
+      <div class="card mb-2">
+        <div class="card-header" style="align-items:start">
+          <div style="flex:1">
+            <div class="card-title mb-1">Query Editor</div>
+            <textarea id="sqlEditor"
+              rows="6"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.75rem;border-radius:6px;resize:vertical;outline:none;box-sizing:border-box"
+              placeholder="SELECT * FROM data LIMIT 10"
+              spellcheck="false"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;align-items:center;margin-top:.75rem;flex-wrap:wrap">
+          <button class="btn btn-primary" id="runBtn">▶ Run Query</button>
+          <button class="btn btn-ghost" id="clearBtn">Clear</button>
+          <button class="btn btn-ghost" id="formatBtn">Format</button>
+          <span class="text-muted text-xs" style="margin-left:auto">Ctrl+Enter to run</span>
+          <span class="badge badge-cyan" id="rowCount" style="display:none"></span>
+          <span class="badge badge-purple" id="execTime" style="display:none"></span>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card mb-2" id="historyCard" style="display:none">
+        <div class="card-header">
+          <div class="card-title">Query History</div>
+          <button class="btn btn-ghost btn-sm" onclick="clearHistory()">Clear</button>
+        </div>
+        <div id="historyList" style="max-height:140px;overflow-y:auto"></div>
+      </div>
+
+      <!-- Results -->
+      <div class="card" id="resultsCard" style="display:none">
+        <div class="card-header">
+          <div class="card-title">Results</div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-ghost btn-sm" id="downloadCsvBtn">Download CSV</button>
+            <button class="btn btn-ghost btn-sm" id="chartToggleBtn">Show Chart</button>
+          </div>
+        </div>
+        <div id="resultsMsg" class="text-muted text-sm mb-1" style="display:none"></div>
+        <div id="resultsTable" style="overflow-x:auto;max-height:400px"></div>
+        <div id="resultsChart" class="chart-container mt-1" style="display:none"></div>
+      </div>
+
+      <!-- Error -->
+      <div class="alert alert-error" id="errBox" style="display:none"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/sqlquery.js"></script>
+{% endblock %}

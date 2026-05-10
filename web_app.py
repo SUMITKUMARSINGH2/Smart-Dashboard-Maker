@@ -34,6 +34,7 @@ PAGES = [
     ("textanalytics", "❂", "Text Analytics"),
     ("validation",    "✔", "Data Validation"),
     ("calculator",    "∑", "Column Calculator"),
+    ("sqlquery",      "⌗", "SQL Query"),
     ("nlq",           "◐", "Ask Your Data"),
     ("live_feed",     "⟳", "Live Data Feed"),
     ("annotations",   "✎", "Annotations"),
@@ -145,6 +146,10 @@ def validation():
 @app.route("/calculator")
 def calculator():
     return render_template("calculator.html", active="calculator")
+
+@app.route("/sqlquery")
+def sqlquery():
+    return render_template("sqlquery.html", active="sqlquery")
 
 @app.route("/privacy")
 def privacy():
