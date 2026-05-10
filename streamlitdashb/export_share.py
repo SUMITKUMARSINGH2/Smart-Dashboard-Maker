@@ -5,7 +5,7 @@ import json
 import io
 import base64
 import datetime
-from .styles import DARK_CSS, section_header, kpi_row_html
+from styles import DARK_CSS, section_header, kpi_row_html
 
 
 def _df_to_b64_csv(df: pd.DataFrame) -> str:

@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from .styles import DARK_CSS, section_header, kpi_row_html
+from styles import DARK_CSS, section_header, kpi_row_html
 
 def file_upload():
     st.markdown(DARK_CSS, unsafe_allow_html=True)
