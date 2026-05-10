@@ -145,7 +145,6 @@ def api_upload():
         set_store(raw_df=df.copy(), df=df.copy(), filename=fname,
                   annotations={})
         store = get_store()
-        save_shared(df, fname, source="flask")
         return jsonify(
             ok=True, filename=fname,
             rows=df.shape[0], cols=df.shape[1],
@@ -399,7 +398,6 @@ def api_sample(name):
         df = sns.load_dataset(name)
         df.columns = [str(c).strip() for c in df.columns]
         set_store(raw_df=df.copy(), df=df.copy(), filename=f"{name}.csv", annotations={})
-        save_shared(df, f"{name}.csv", source="flask")
         return jsonify(
             ok=True, filename=f"{name}.csv",
             rows=df.shape[0], cols=df.shape[1],
@@ -412,37 +410,6 @@ def api_sample(name):
     except Exception as e:
         return jsonify(error=str(e)), 500
 
-
-@data_bp.route("/bridge-meta")
-def api_bridge_meta():
-    """Return shared bridge metadata so either app can check if new data is available."""
-    meta = bridge_meta()
-    if meta is None:
-        return jsonify(exists=False)
-    return jsonify(exists=True, **meta)
-
-
-@data_bp.route("/sync-from-bridge", methods=["POST"])
-def api_sync_from_bridge():
-    """Load the shared bridge file into the Flask session store."""
-    try:
-        df, meta = load_shared()
-        if df is None:
-            return jsonify(ok=False, error="No bridge data found"), 404
-        fname = meta.get("filename", "synced_data.csv")
-        set_store(raw_df=df.copy(), df=df.copy(), filename=fname, annotations={})
-        return jsonify(
-            ok=True, filename=fname,
-            rows=df.shape[0], cols=df.shape[1],
-            columns=list(df.columns),
-            col_types=_col_types(df),
-            preview=_df_safe(df, 100),
-            dtypes={c: str(df[c].dtype) for c in df.columns},
-            missing={c: int(df[c].isna().sum()) for c in df.columns},
-            source=meta.get("source", "unknown"),
-        )
-    except Exception as e:
-        return jsonify(ok=False, error=str(e)), 500
 
 @data_bp.route("/annotated-data")
 def api_annotated_data():
