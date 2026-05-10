@@ -1,8 +1,0 @@
-uploads = []
-generated = []
-
-[[outputs]]
-id = "jB66DJWu8ffq8KoWktJy0"
-uri = "file://sample_sales_data.csv"
-type = "table"
-title = "Sample Sales Dataset (300 rows)"
