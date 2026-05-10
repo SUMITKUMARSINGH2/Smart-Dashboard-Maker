@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Export & Reports — DataViz Pro{% endblock %}
+{% block page_title %}Export & Reports{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Export &amp; Reports</h1>
+  <p>Download your data in multiple formats and generate analysis reports</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="card mb-2" id="exportInfo">
+    <div class="card-title mb-1">Dataset Ready for Export</div>
+    <div id="exportStats" class="text-muted text-sm"></div>
+  </div>
+
+  <div class="grid-auto">
+    <div class="card">
+      <div class="feature-icon">📄</div>
+      <div class="feature-title">CSV</div>
+      <div class="feature-desc text-muted text-sm mb-2">Comma-separated values, universally compatible.</div>
+      <a href="/api/export/csv" class="btn btn-primary btn-block" download>Download CSV</a>
+    </div>
+    <div class="card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Excel (.xlsx)</div>
+      <div class="feature-desc text-muted text-sm mb-2">Multi-sheet workbook with data + statistics.</div>
+      <a href="/api/export/excel" class="btn btn-success btn-block" download>Download Excel</a>
+    </div>
+    <div class="card">
+      <div class="feature-icon">{ }</div>
+      <div class="feature-title">JSON</div>
+      <div class="feature-desc text-muted text-sm mb-2">Records-oriented JSON for APIs and web apps.</div>
+      <a href="/api/export/json" class="btn btn-purple btn-block" download>Download JSON</a>
+    </div>
+    <div class="card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Parquet</div>
+      <div class="feature-desc text-muted text-sm mb-2">Columnar format — fastest for large datasets.</div>
+      <a href="/api/export/parquet" class="btn btn-ghost btn-block" download>Download Parquet</a>
+    </div>
+    <div class="card">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-title">HTML Report</div>
+      <div class="feature-desc text-muted text-sm mb-2">Shareable HTML with stats, preview, and missing value summary.</div>
+      <a href="/api/export/html-report" class="btn btn-primary btn-block" download>Download Report</a>
+    </div>
+    <div class="card">
+      <div class="feature-icon">🗜</div>
+      <div class="feature-title">ZIP Bundle</div>
+      <div class="feature-desc text-muted text-sm mb-2">CSV + JSON + stats.txt in one archive.</div>
+      <a href="/api/export/zip" class="btn btn-ghost btn-block" download>Download ZIP</a>
+    </div>
+    <div class="card">
+      <div class="feature-icon">⬡</div>
+      <div class="feature-title">Power BI Config</div>
+      <div class="feature-desc text-muted text-sm mb-2">M-Query and DAX measures for Power BI Desktop.</div>
+      <a href="/api/export/powerbi-mquery" class="btn btn-amber btn-block" style="--amber:#F59E0B;background:rgba(245,158,11,.15);color:#F59E0B;border:1px solid rgba(245,158,11,.3)" download>Download Power BI Config</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/export.js"></script>
+{% endblock %}

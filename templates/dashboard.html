@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Auto Dashboard — DataViz Pro{% endblock %}
+{% block page_title %}Auto Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header flex justify-between items-center">
+  <div>
+    <h1>Auto Dashboard</h1>
+    <p>Auto-generated KPIs and smart charts based on your dataset</p>
+  </div>
+  <button class="btn btn-primary" id="refreshBtn">⟳ Refresh</button>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-4 mb-2" id="kpiRow"></div>
+  <div class="grid-2" id="chartsGrid"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

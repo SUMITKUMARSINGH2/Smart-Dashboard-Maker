@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Data Cleaning — DataViz Pro{% endblock %}
+{% block page_title %}Data Cleaning{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Data Cleaning</h1>
+  <p>Remove duplicates, handle missing values, transform columns</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-4 mb-2" id="statusKpis"></div>
+
+  <div class="grid-2" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:1rem">
+
+      <div class="card">
+        <div class="card-title mb-1">Deduplication</div>
+        <p class="text-muted text-sm mb-1">Remove exact duplicate rows from the dataset.</p>
+        <button class="btn btn-primary" id="dedupeBtn">Remove Duplicates</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-1">Handle Missing Values</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Column (optional)</label>
+            <select class="form-control" id="fillCol">
+              <option value="">All numeric cols</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fill Method</label>
+            <select class="form-control" id="fillMethod">
+              <option value="mean">Mean</option>
+              <option value="median">Median</option>
+              <option value="mode">Mode</option>
+              <option value="zero">Zero</option>
+              <option value="ffill">Forward Fill</option>
+              <option value="bfill">Backward Fill</option>
+              <option value="value">Custom Value</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group hidden" id="customValueGroup">
+          <label class="form-label">Custom Value</label>
+          <input type="text" class="form-control" id="customValue" placeholder="Enter value">
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-primary" id="fillBtn">Fill Missing</button>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Drop rows with missing in col</label>
+            <div style="display:flex;gap:.5rem">
+              <select class="form-control" id="dropMissCol">
+                <option value="">All columns</option>
+              </select>
+              <button class="btn btn-danger btn-sm" id="dropMissBtn">Drop</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-1">Column Operations</div>
+        <div class="form-group">
+          <label class="form-label">Drop Column</label>
+          <div style="display:flex;gap:.5rem">
+            <select class="form-control" id="dropColSel"></select>
+            <button class="btn btn-danger btn-sm" id="dropColBtn">Drop</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rename Column</label>
+          <div style="display:flex;gap:.5rem">
+            <select class="form-control" id="renameOldSel"></select>
+            <input type="text" class="form-control" id="renameNewVal" placeholder="New name">
+            <button class="btn btn-primary btn-sm" id="renameBtn">Rename</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cast Column Type</label>
+          <div style="display:flex;gap:.5rem">
+            <select class="form-control" id="castColSel"></select>
+            <select class="form-control" id="castTypeSel">
+              <option value="numeric">Numeric</option>
+              <option value="string">String</option>
+              <option value="datetime">Datetime</option>
+              <option value="bool">Boolean</option>
+            </select>
+            <button class="btn btn-purple btn-sm" id="castBtn">Cast</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-1">Text Normalization</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="btn btn-ghost" id="stripWsBtn">Strip Whitespace</button>
+          <button class="btn btn-ghost" id="lowerColsBtn">Lowercase Columns</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-1">Remove Outliers from Column</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Column</label>
+            <select class="form-control" id="outlierColSel"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Method</label>
+            <select class="form-control" id="outlierMethodSel">
+              <option value="iqr">IQR</option>
+              <option value="zscore">Z-Score</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-danger" id="removeOutliersBtn">Remove Outliers</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-1">Filter Rows</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Column</label>
+            <select class="form-control" id="filterColSel"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Operator</label>
+            <select class="form-control" id="filterOpSel">
+              <option value="==">=</option>
+              <option value="!=">≠</option>
+              <option value=">">&gt;</option>
+              <option value="<">&lt;</option>
+              <option value=">=">&gt;=</option>
+              <option value="<=">&lt;=</option>
+              <option value="contains">contains</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Value</label>
+            <input type="text" class="form-control" id="filterVal" placeholder="Value">
+          </div>
+        </div>
+        <button class="btn btn-primary" id="filterRowsBtn">Apply Filter</button>
+      </div>
+
+      <div class="card" style="border-color:rgba(239,68,68,.3)">
+        <div class="card-title mb-1" style="color:var(--red)">Reset Dataset</div>
+        <p class="text-muted text-sm mb-1">Revert all changes to the original uploaded file.</p>
+        <button class="btn btn-danger" id="resetBtn">↺ Reset to Original</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Current Dataset Preview</div>
+        <div class="card-subtitle" id="previewStats"></div>
+      </div>
+      <div class="table-scrollable" id="previewTable"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/cleaning.js"></script>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Live Data Feed — DataViz Pro{% endblock %}
+{% block page_title %}Live Data Feed{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Live Data Feed</h1>
+  <p>Connect to any URL endpoint and stream live data with auto-refresh</p>
+</div>
+
+<div class="grid-2" style="align-items:start">
+  <div class="card">
+    <div class="card-title mb-2">Connection Settings</div>
+    <div class="form-group">
+      <label class="form-label">Data URL (JSON or CSV)</label>
+      <input type="text" class="form-control" id="liveUrl"
+        placeholder="https://api.example.com/data.json">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Refresh Interval (seconds)</label>
+      <input type="number" class="form-control" id="liveInterval" value="30" min="5" max="3600">
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn btn-primary" id="connectBtn">⟳ Connect</button>
+      <button class="btn btn-ghost" id="pauseBtn" disabled>⏸ Pause</button>
+      <button class="btn btn-danger btn-sm" id="disconnectBtn" disabled>✕ Disconnect</button>
+    </div>
+
+    <div class="mt-2">
+      <div class="card-title text-sm mb-1">Example endpoints</div>
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <button class="btn btn-ghost btn-sm" onclick="setUrl('https://api.coindesk.com/v1/bpi/currentprice.json')">Bitcoin Price (JSON)</button>
+        <button class="btn btn-ghost btn-sm" onclick="setUrl('https://data.cityofnewyork.us/resource/h9gi-nx95.csv?$limit=100')">NYC Open Data (CSV)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Status</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span class="live-dot" id="liveDot"></span>
+        <span id="liveStatus" class="text-muted text-sm">Disconnected</span>
+      </div>
+    </div>
+    <div class="grid-2 mb-1">
+      <div class="kpi-card cyan">
+        <div class="kpi-value" id="fetchCount">0</div>
+        <div class="kpi-label">Fetches</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-value" id="rowCount">—</div>
+        <div class="kpi-label">Last Row Count</div>
+      </div>
+    </div>
+    <div class="text-muted text-sm" id="lastFetch">Last fetch: —</div>
+  </div>
+</div>
+
+<div class="card mt-2 hidden" id="liveDataCard">
+  <div class="card-header">
+    <div class="card-title">Latest Data</div>
+    <div class="card-subtitle" id="liveDataStats"></div>
+  </div>
+  <div class="table-scrollable" id="liveTable"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/live_feed.js"></script>
+{% endblock %}

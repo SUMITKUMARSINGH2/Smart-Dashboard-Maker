@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Data Comparison — DataViz Pro{% endblock %}
+{% block page_title %}Data Comparison{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Data Comparison</h1>
+  <p>Compare your current dataset with a second file side by side</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset (A) loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2 mb-2" style="align-items:start">
+    <div class="card">
+      <div class="card-title mb-1">Dataset A (current)</div>
+      <div id="dsAInfo" class="text-muted text-sm"></div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-2">Dataset B (upload)</div>
+      <div class="upload-zone" id="cmpDropZone" style="padding:1.5rem 1rem" onclick="document.getElementById('cmpFileInput').click()">
+        <div class="upload-zone-icon" style="font-size:1.5rem">⬆</div>
+        <div class="upload-zone-sub">CSV · Excel · JSON</div>
+        <input type="file" id="cmpFileInput" accept=".csv,.xlsx,.xls,.json" style="display:none">
+      </div>
+      <div id="dsBInfo" class="text-muted text-sm mt-1 hidden"></div>
+    </div>
+  </div>
+
+  <div id="cmpResultArea" class="hidden">
+    <div class="tabs">
+      <div class="tab active" data-tab="cmp-stats">Statistics</div>
+      <div class="tab" data-tab="cmp-dist">Distributions</div>
+    </div>
+
+    <div class="tab-panel active" data-panel="cmp-stats">
+      <div class="card">
+        <div class="card-title mb-1">Side-by-Side Statistics</div>
+        <div id="cmpStatsTable"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="cmp-dist">
+      <div class="card">
+        <div class="card-title mb-1">Distribution Comparison</div>
+        <div class="chart-container" id="cmpChart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/comparison.js"></script>
+{% endblock %}

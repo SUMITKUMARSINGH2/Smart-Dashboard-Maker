@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Data Profiling — DataViz Pro{% endblock %}
+{% block page_title %}Data Profiling{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Data Profiling</h1>
+  <p>Comprehensive per-column statistics and data quality overview</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-4 mb-2" id="overviewKpis"></div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Column Profiles</div>
+        <div class="card-subtitle">Click a column to see detailed stats</div>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <input type="text" class="form-control" id="colSearch" placeholder="Search columns…" style="width:180px">
+        <select class="form-control" id="typeFilter" style="width:130px">
+          <option value="">All types</option>
+          <option value="numeric">Numeric</option>
+          <option value="categorical">Categorical</option>
+          <option value="datetime">Datetime</option>
+        </select>
+      </div>
+    </div>
+    <div class="profile-grid" id="profileGrid"></div>
+  </div>
+
+  <div class="card mt-2 hidden" id="detailCard">
+    <div class="card-header">
+      <div class="card-title" id="detailTitle">Column Detail</div>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('detailCard').classList.add('hidden')">✕ Close</button>
+    </div>
+    <div class="grid-2">
+      <div id="detailStats"></div>
+      <div id="detailChart" style="min-height:260px"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/profiling.js"></script>
+{% endblock %}

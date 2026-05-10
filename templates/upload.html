@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Upload Data — DataViz Pro{% endblock %}
+{% block page_title %}Upload Data{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Upload Data</h1>
+  <p>Supports CSV, Excel, JSON, Parquet, TSV — up to any reasonable size</p>
+</div>
+
+<div class="grid-2" style="align-items:start">
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Choose File</div>
+      </div>
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-zone-icon">⬆</div>
+        <div class="upload-zone-title">Drop file here or click to browse</div>
+        <div class="upload-zone-sub">CSV · Excel · JSON · Parquet · TSV</div>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json,.parquet,.tsv,.txt" style="display:none">
+      </div>
+      <div id="fileInfo" class="hidden mt-2 alert alert-info"></div>
+
+      <div class="form-row mt-2">
+        <div class="form-group">
+          <label class="form-label">CSV Separator</label>
+          <select class="form-control" id="sepSel">
+            <option value=",">, (comma)</option>
+            <option value=";">; (semicolon)</option>
+            <option value="&#9;">⇥ (tab)</option>
+            <option value="|">| (pipe)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Encoding</label>
+          <select class="form-control" id="encSel">
+            <option value="utf-8">UTF-8</option>
+            <option value="latin-1">Latin-1</option>
+            <option value="cp1252">CP-1252</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block mt-1" id="uploadBtn" disabled>Upload & Parse</button>
+    </div>
+
+    <div class="card mt-2" id="sampleCard">
+      <div class="card-header"><div class="card-title">Load Sample Dataset</div></div>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <button class="btn btn-ghost" onclick="loadSample('titanic')">🚢 Titanic (classification)</button>
+        <button class="btn btn-ghost" onclick="loadSample('iris')">🌸 Iris (clustering)</button>
+        <button class="btn btn-ghost" onclick="loadSample('tips')">💰 Tips (regression)</button>
+        <button class="btn btn-ghost" onclick="loadSample('diamonds')">💎 Diamonds (analytics)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="previewArea" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="previewTitle">Preview</div>
+          <div class="card-subtitle" id="previewStats"></div>
+        </div>
+        <a href="/dashboard" class="btn btn-sm btn-primary" id="goDash">Explore →</a>
+      </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="preview-data">Data Preview</div>
+        <div class="tab" data-tab="preview-types">Column Types</div>
+        <div class="tab" data-tab="preview-missing">Missing Values</div>
+      </div>
+      <div class="tab-panel active" data-panel="preview-data">
+        <div class="table-scrollable" id="previewTable"></div>
+      </div>
+      <div class="tab-panel" data-panel="preview-types">
+        <div id="typesList"></div>
+      </div>
+      <div class="tab-panel" data-panel="preview-missing">
+        <div id="missingList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/upload.js"></script>
+{% endblock %}

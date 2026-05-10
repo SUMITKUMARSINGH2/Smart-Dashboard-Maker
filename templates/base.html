@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}DataViz Pro{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">DataViz<span class="logo-accent">Pro</span></span>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    {% if ds_info %}
+    <div class="ds-badge">
+      <div class="ds-badge-icon">📁</div>
+      <div class="ds-badge-info">
+        <div class="ds-badge-name" title="{{ ds_info.filename }}">{{ ds_info.filename | truncate(20) }}</div>
+        <div class="ds-badge-stats">{{ ds_info.rows }} rows · {{ ds_info.cols }} cols</div>
+      </div>
+    </div>
+    {% else %}
+    <div class="ds-badge ds-badge-empty">
+      <div class="ds-badge-icon">📭</div>
+      <div class="ds-badge-info">
+        <div class="ds-badge-name">No dataset loaded</div>
+        <div class="ds-badge-stats"><a href="/upload">Upload now →</a></div>
+      </div>
+    </div>
+    {% endif %}
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Analysis</div>
+      {% for page_id, icon, label in nav_pages %}
+      <a href="/{{ page_id if page_id != 'home' else '' }}" class="nav-item {% if active == page_id %}active{% endif %}">
+        <span class="nav-icon">{{ icon }}</span>
+        <span class="nav-label">{{ label }}</span>
+      </a>
+      {% endfor %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="nav-section-label">Legal</div>
+      {% for page_id, label in legal_pages %}
+      <a href="/{{ page_id }}" class="nav-item nav-item-sm {% if active == page_id %}active{% endif %}">
+        <span class="nav-label">{{ label }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <!-- Main layout -->
+  <div class="main-wrapper" id="mainWrapper">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-toggle" id="topbarToggle">☰</button>
+        <div class="breadcrumb">
+          <span class="breadcrumb-root">DataViz Pro</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">{% block page_title %}Dashboard{% endblock %}</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        {% if ds_info %}
+        <div class="topbar-ds">
+          <span class="topbar-ds-dot"></span>
+          <span>{{ ds_info.filename }} · {{ ds_info.rows }} rows</span>
+        </div>
+        {% endif %}
+        <a href="/upload" class="btn btn-sm btn-primary">Upload Data</a>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="page-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
+
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

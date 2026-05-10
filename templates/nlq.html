@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Ask Your Data — DataViz Pro{% endblock %}
+{% block page_title %}Ask Your Data{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Ask Your Data</h1>
+  <p>Query your dataset using plain English — no code required</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="card mb-2">
+    <div class="nlq-input-wrap">
+      <input type="text" class="nlq-input" id="nlqInput" placeholder="e.g. show top 10 by revenue, average of age, correlation…">
+      <button class="btn btn-primary" id="nlqBtn">Ask</button>
+    </div>
+    <div class="nlq-chip-list" id="nlqChips"></div>
+  </div>
+
+  <div id="nlqHistory" style="display:flex;flex-direction:column;gap:1rem"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/nlq.js"></script>
+{% endblock %}

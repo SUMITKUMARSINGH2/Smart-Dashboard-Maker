@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Annotations — DataViz Pro{% endblock %}
+{% block page_title %}Annotations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Annotations</h1>
+  <p>Tag and annotate rows with notes, labels, and colors</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div class="card">
+      <div class="card-title mb-2">Add Annotation</div>
+      <div class="form-group">
+        <label class="form-label">Row Index</label>
+        <input type="number" class="form-control" id="annRow" min="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <input type="text" class="form-control" id="annNote" placeholder="Enter annotation…">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tag</label>
+          <select class="form-control" id="annTag">
+            <option value="note">Note</option>
+            <option value="flag">Flag</option>
+            <option value="error">Error</option>
+            <option value="review">Review</option>
+            <option value="important">Important</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Color</label>
+          <input type="color" class="form-control" id="annColor" value="#00D4FF" style="height:38px;padding:.2rem">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="annSaveBtn">Save Annotation</button>
+
+      <div class="mt-2">
+        <div class="card-title text-sm mb-1">Saved Annotations (<span id="annCount">0</span>)</div>
+        <div id="annList" style="display:flex;flex-direction:column;gap:.4rem;max-height:300px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Data with Annotations</div>
+        <div class="card-subtitle" id="annDataStats"></div>
+      </div>
+      <div class="table-scrollable" id="annTable"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/annotations.js"></script>
+{% endblock %}

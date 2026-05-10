@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Chart Builder — DataViz Pro{% endblock %}
+{% block page_title %}Chart Builder{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Chart Builder</h1>
+  <p>Build custom charts with 19 chart types</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="grid-2" style="align-items:start">
+    <div class="card">
+      <div class="card-title mb-2">Chart Configuration</div>
+
+      <div class="form-group">
+        <label class="form-label">Chart Type</label>
+        <select class="form-control" id="chartType">
+          <optgroup label="Basic">
+            <option value="scatter">Scatter</option>
+            <option value="line">Line</option>
+            <option value="bar">Bar</option>
+            <option value="histogram">Histogram</option>
+            <option value="area">Area</option>
+          </optgroup>
+          <optgroup label="Distribution">
+            <option value="box">Box Plot</option>
+            <option value="violin">Violin</option>
+            <option value="strip">Strip Plot</option>
+            <option value="ecdf">ECDF</option>
+          </optgroup>
+          <optgroup label="Part-of-Whole">
+            <option value="pie">Pie</option>
+            <option value="donut">Donut</option>
+            <option value="treemap">Treemap</option>
+            <option value="sunburst">Sunburst</option>
+            <option value="funnel">Funnel</option>
+          </optgroup>
+          <optgroup label="Heatmap & Density">
+            <option value="heatmap">Correlation Heatmap</option>
+            <option value="hexbin">Hex Density</option>
+            <option value="density">Density Heatmap</option>
+          </optgroup>
+          <optgroup label="Advanced">
+            <option value="bubble">Bubble</option>
+            <option value="waterfall">Waterfall</option>
+            <option value="gauge">Gauge</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">X Axis / Category</label>
+          <select class="form-control" id="chartX"><option value="">— None —</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Y Axis / Value</label>
+          <select class="form-control" id="chartY"><option value="">— None —</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Color By</label>
+          <select class="form-control" id="chartColor"><option value="">— None —</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Size By (bubble)</label>
+          <select class="form-control" id="chartSize"><option value="">— None —</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Aggregation (bar)</label>
+          <select class="form-control" id="chartAgg">
+            <option value="sum">Sum</option>
+            <option value="mean">Mean</option>
+            <option value="count">Count</option>
+            <option value="max">Max</option>
+            <option value="min">Min</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bins (histogram)</label>
+          <input type="number" class="form-control" id="chartBins" value="20" min="5" max="200">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chart Title</label>
+        <input type="text" class="form-control" id="chartTitle" placeholder="My Chart">
+      </div>
+
+      <button class="btn btn-primary btn-block" id="buildBtn">Build Chart</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title mb-2">Preview</div>
+      <div class="chart-container" id="chartPreview">
+        <div class="chart-placeholder">Configure and build a chart →</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/chart_builder.js"></script>
+{% endblock %}

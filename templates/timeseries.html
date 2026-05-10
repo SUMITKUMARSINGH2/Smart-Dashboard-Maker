@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Time Series — DataViz Pro{% endblock %}
+{% block page_title %}Time Series{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Time Series Analysis</h1>
+  <p>Trends, rolling averages, seasonal decomposition, and growth rates</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="card mb-2">
+    <div class="card-title mb-2">Column Selection</div>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label class="form-label">Date / Time Column</label>
+        <select class="form-control" id="dateCol"><option>Loading…</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Value Column</label>
+        <select class="form-control" id="valCol" data-type="numeric"><option>Loading…</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rolling Window</label>
+        <input type="number" class="form-control" id="rollingWindow" value="7" min="2" max="365">
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="ts-trend">Trend</div>
+    <div class="tab" data-tab="ts-growth">Growth Rate</div>
+    <div class="tab" data-tab="ts-decompose">Decomposition</div>
+  </div>
+
+  <div class="tab-panel active" data-panel="ts-trend">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Trend &amp; Rolling Average</div>
+        <button class="btn btn-primary btn-sm" id="trendBtn">Generate</button>
+      </div>
+      <div class="chart-container" id="trendChart"></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-panel="ts-growth">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Period-over-Period Growth %</div>
+        <button class="btn btn-primary btn-sm" id="growthBtn">Generate</button>
+      </div>
+      <div class="chart-container" id="growthChart"></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-panel="ts-decompose">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Seasonal Decomposition</div>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <label class="form-label" style="margin:0">Period:</label>
+          <input type="number" class="form-control" id="decompPeriod" value="12" min="2" max="365" style="width:80px">
+          <button class="btn btn-primary btn-sm" id="decompBtn">Decompose</button>
+        </div>
+      </div>
+      <div class="chart-container" id="decompChart"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/timeseries.js"></script>
+{% endblock %}

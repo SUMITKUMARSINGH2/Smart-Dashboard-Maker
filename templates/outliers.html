@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Outlier Detection — DataViz Pro{% endblock %}
+{% block page_title %}Outlier Detection{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Outlier Detection</h1>
+  <p>IQR, Z-Score, and Modified Z-Score outlier identification</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="card mb-2">
+    <div class="card-header">
+      <div class="card-title">Detection Settings</div>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <select class="form-control" id="outlierMethod" style="width:160px">
+          <option value="iqr">IQR (1.5×)</option>
+          <option value="zscore">Z-Score (3σ)</option>
+          <option value="modified_z">Modified Z-Score</option>
+        </select>
+        <select class="form-control" id="outlierCol" style="width:180px">
+          <option value="">All numeric columns</option>
+        </select>
+        <button class="btn btn-primary" id="detectBtn">Detect Outliers</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-container card mb-2" id="outlierChart">
+    <div class="chart-placeholder">Run detection to see box plots</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title mb-1">Detection Results</div>
+    <div id="outlierResults"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/outliers.js"></script>
+{% endblock %}

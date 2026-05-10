@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}EDA & Statistics — DataViz Pro{% endblock %}
+{% block page_title %}EDA & Statistics{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>EDA &amp; Statistics</h1>
+  <p>Exploratory data analysis: correlations, distributions, hypothesis tests</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="tabs">
+    <div class="tab active" data-tab="eda-corr">Correlation</div>
+    <div class="tab" data-tab="eda-dist">Distribution</div>
+    <div class="tab" data-tab="eda-box">Box Plots</div>
+    <div class="tab" data-tab="eda-scatter">Scatter</div>
+    <div class="tab" data-tab="eda-hyp">Hypothesis Test</div>
+  </div>
+
+  <!-- Correlation -->
+  <div class="tab-panel active" data-panel="eda-corr">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Correlation Matrix</div>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <select class="form-control" id="corrMethod" style="width:130px">
+            <option value="pearson">Pearson</option>
+            <option value="spearman">Spearman</option>
+            <option value="kendall">Kendall</option>
+          </select>
+          <button class="btn btn-primary btn-sm" id="corrBtn">Compute</button>
+        </div>
+      </div>
+      <div class="chart-container" id="corrChart"></div>
+    </div>
+  </div>
+
+  <!-- Distribution -->
+  <div class="tab-panel" data-panel="eda-dist">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Distribution</div>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <select class="form-control" id="distCol" style="width:180px" data-type=""><option>Loading…</option></select>
+          <div style="display:flex;align-items:center;gap:.3rem">
+            <label class="form-label" style="margin:0;white-space:nowrap">Bins:</label>
+            <input type="number" class="form-control" id="distBins" value="30" min="5" max="200" style="width:70px">
+          </div>
+          <button class="btn btn-primary btn-sm" id="distBtn">Plot</button>
+        </div>
+      </div>
+      <div class="chart-container" id="distChart"></div>
+    </div>
+  </div>
+
+  <!-- Box Plots -->
+  <div class="tab-panel" data-panel="eda-box">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Box Plots</div>
+        <button class="btn btn-primary btn-sm" id="boxBtn">Generate</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select columns (leave empty for all numeric)</label>
+        <select class="form-control" id="boxCols" multiple style="height:100px"></select>
+      </div>
+      <div class="chart-container" id="boxChart"></div>
+    </div>
+  </div>
+
+  <!-- Scatter -->
+  <div class="tab-panel" data-panel="eda-scatter">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Scatter Plot</div></div>
+      <div class="form-row-3 mb-2">
+        <div class="form-group">
+          <label class="form-label">X Axis</label>
+          <select class="form-control" id="scatterX" data-type="numeric"><option>Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Y Axis</label>
+          <select class="form-control" id="scatterY" data-type="numeric"><option>Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Color By (optional)</label>
+          <select class="form-control" id="scatterColor"><option value="">None</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary mb-2" id="scatterBtn">Plot Scatter</button>
+      <div class="chart-container" id="scatterChart"></div>
+    </div>
+  </div>
+
+  <!-- Hypothesis -->
+  <div class="tab-panel" data-panel="eda-hyp">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Hypothesis Testing</div></div>
+      <div class="form-row mb-2">
+        <div class="form-group">
+          <label class="form-label">Column A</label>
+          <select class="form-control" id="hypCol1" data-type="numeric"><option>Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Column B</label>
+          <select class="form-control" id="hypCol2" data-type="numeric"><option>Loading…</option></select>
+        </div>
+      </div>
+      <div class="form-group mb-2">
+        <label class="form-label">Test</label>
+        <select class="form-control" id="hypTest">
+          <option value="ttest">Independent T-Test</option>
+          <option value="mannwhitney">Mann-Whitney U</option>
+          <option value="ks">Kolmogorov-Smirnov</option>
+          <option value="levene">Levene's Test</option>
+        </select>
+      </div>
+      <button class="btn btn-primary mb-2" id="hypBtn">Run Test</button>
+      <div id="hypResult" class="hidden"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/eda.js"></script>
+{% endblock %}

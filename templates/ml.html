@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}ML Insights — DataViz Pro{% endblock %}
+{% block page_title %}ML Insights{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>ML Insights</h1>
+  <p>Clustering, anomaly detection, feature importance, dimensionality reduction</p>
+</div>
+
+<div id="noDataMsg" class="alert alert-warn hidden">No dataset loaded. <a href="/upload">Upload one →</a></div>
+
+<div id="mainArea" class="hidden">
+  <div class="tabs">
+    <div class="tab active" data-tab="ml-kmeans">K-Means Clustering</div>
+    <div class="tab" data-tab="ml-anomaly">Anomaly Detection</div>
+    <div class="tab" data-tab="ml-feat">Feature Importance</div>
+    <div class="tab" data-tab="ml-pca">PCA</div>
+  </div>
+
+  <!-- K-Means -->
+  <div class="tab-panel active" data-panel="ml-kmeans">
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title mb-2">K-Means Configuration</div>
+        <div class="form-group">
+          <label class="form-label">Number of Clusters (k)</label>
+          <input type="range" id="kSlider" min="2" max="12" value="3"
+                 style="width:100%;accent-color:var(--cyan)">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-muted)">
+            <span>2</span><span id="kVal" style="color:var(--cyan);font-weight:700">3</span><span>12</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Feature Columns (leave empty for all numeric)</label>
+          <select class="form-control" id="kCols" multiple style="height:100px"></select>
+        </div>
+        <button class="btn btn-primary btn-block" id="kmeansBtn">Run Clustering</button>
+      </div>
+      <div>
+        <div class="card mb-1" id="kmeansResults" style="display:none">
+          <div class="card-title mb-1">Cluster Sizes</div>
+          <div id="clusterSizes"></div>
+          <div class="mt-1 text-sm text-muted" id="pcaVar"></div>
+        </div>
+        <div class="card">
+          <div class="card-title mb-1">Elbow Curve</div>
+          <div id="elbowChart" style="min-height:200px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-title mb-1">Cluster Visualization (PCA 2D)</div>
+      <div class="chart-container" id="kmeansChart"></div>
+    </div>
+  </div>
+
+  <!-- Anomaly -->
+  <div class="tab-panel" data-panel="ml-anomaly">
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title mb-2">Isolation Forest Configuration</div>
+        <div class="form-group">
+          <label class="form-label">Contamination (expected anomaly fraction)</label>
+          <input type="range" id="contamSlider" min="1" max="20" value="5" step="1"
+                 style="width:100%;accent-color:var(--pink)">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-muted)">
+            <span>1%</span><span id="contamVal" style="color:var(--pink);font-weight:700">5%</span><span>20%</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Feature Columns (leave empty for all numeric)</label>
+          <select class="form-control" id="anomCols" multiple style="height:100px"></select>
+        </div>
+        <button class="btn btn-pink btn-block" id="anomalyBtn">Detect Anomalies</button>
+      </div>
+      <div class="card" id="anomalyStats" style="display:none">
+        <div class="card-title mb-1">Detection Results</div>
+        <div id="anomalyInfo"></div>
+        <div id="scoreChart" style="min-height:180px;margin-top:.75rem"></div>
+      </div>
+    </div>
+    <div class="card mt-2" id="anomalyChartCard" style="display:none">
+      <div class="card-title mb-1">Anomaly Scatter (PCA 2D)</div>
+      <div class="chart-container" id="anomalyChart"></div>
+    </div>
+    <div class="card mt-2 hidden" id="anomRowsCard">
+      <div class="card-title mb-1">Anomalous Rows (sample)</div>
+      <div id="anomRowsTable"></div>
+    </div>
+  </div>
+
+  <!-- Feature Importance -->
+  <div class="tab-panel" data-panel="ml-feat">
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title mb-2">Feature Importance Configuration</div>
+        <div class="form-group">
+          <label class="form-label">Target Column</label>
+          <select class="form-control" id="featTarget"><option>Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Model</label>
+          <select class="form-control" id="featModel">
+            <option value="rf">Random Forest</option>
+            <option value="gbm">Gradient Boosting</option>
+          </select>
+        </div>
+        <button class="btn btn-purple btn-block" id="featBtn">Compute Importance</button>
+      </div>
+      <div class="card" id="featTable" style="display:none">
+        <div class="card-title mb-1">Feature Rankings</div>
+        <div id="featList"></div>
+      </div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-title mb-1">Importance Chart</div>
+      <div class="chart-container" id="featChart"></div>
+    </div>
+  </div>
+
+  <!-- PCA -->
+  <div class="tab-panel" data-panel="ml-pca">
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title mb-2">PCA Configuration</div>
+        <div class="form-group">
+          <label class="form-label">Number of Components</label>
+          <input type="range" id="pcaSlider" min="2" max="10" value="3"
+                 style="width:100%;accent-color:var(--purple)">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-muted)">
+            <span>2</span><span id="pcaVal" style="color:var(--purple);font-weight:700">3</span><span>10</span>
+          </div>
+        </div>
+        <button class="btn btn-purple btn-block" id="pcaBtn">Run PCA</button>
+      </div>
+      <div class="card" id="pcaInfo" style="display:none">
+        <div class="card-title mb-1">Components</div>
+        <div id="pcaComponents"></div>
+      </div>
+    </div>
+    <div class="grid-2 mt-2">
+      <div class="card">
+        <div class="card-title mb-1">Scree Plot</div>
+        <div id="pcaScree" style="min-height:240px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-1">Biplot (PC1 vs PC2)</div>
+        <div id="pcaBiplot" style="min-height:240px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="/static/js/ml.js"></script>
+{% endblock %}
