@@ -4,8 +4,9 @@ address = "0.0.0.0"
 headless = true
 
 [theme]
-primaryColor = "#7C3AED"
-backgroundColor = "#FAFAF9"
-secondaryBackgroundColor = "#F5F3FF"
-textColor = "#1C1917"
+base = "dark"
+primaryColor = "#38bdf8"
+backgroundColor = "#07090f"
+secondaryBackgroundColor = "#0e1117"
+textColor = "#e8eaf6"
 font = "sans serif"
