@@ -1,7 +1,35 @@
 from flask import Flask, render_template, session, redirect, url_for
-import os, secrets
+from flask.json.provider import DefaultJSONProvider
+import os, secrets, math, json
+import numpy as np
+
+# ── NaN-safe JSON provider ─────────────────────────────────────────────────────
+def _nan_safe(obj):
+    """Recursively replace NaN/Inf/numpy scalars so JSON.parse never chokes."""
+    if isinstance(obj, float):
+        return None if (math.isnan(obj) or math.isinf(obj)) else obj
+    if isinstance(obj, (np.floating,)):
+        v = float(obj)
+        return None if (math.isnan(v) or math.isinf(v)) else v
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, np.ndarray):
+        return _nan_safe(obj.tolist())
+    if isinstance(obj, dict):
+        return {k: _nan_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_nan_safe(v) for v in obj]
+    return obj
+
+class SafeJSONProvider(DefaultJSONProvider):
+    def dumps(self, obj, **kwargs):
+        return super().dumps(_nan_safe(obj), **kwargs)
+    def response(self, *args, **kwargs):
+        return super().response(*args, **kwargs)
 
 app = Flask(__name__)
+app.json_provider_class = SafeJSONProvider
+app.json = SafeJSONProvider(app)
 app.secret_key = secrets.token_hex(32)
 
 from api.data_routes import data_bp
