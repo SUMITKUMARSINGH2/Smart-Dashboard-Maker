@@ -1,25 +1,18 @@
 DARK_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg: #060B1A;
-  --surface: #0D1528;
-  --surface2: #111827;
-  --border: #1E293B;
-  --border2: #2D3748;
-  --text: #E2E8F0;
-  --text-muted: #94A3B8;
-  --cyan: #00D4FF;
-  --purple: #7C3AED;
-  --pink: #FF006E;
-  --green: #10B981;
-  --amber: #F59E0B;
-  --red: #EF4444;
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface2: #1a1a26;
+  --border: #2a2a3d;
+  --text: #f0f0ff;
+  --muted: #8888aa;
 }
 
 html, body, [class*="css"] {
-  font-family: 'Space Grotesk', system-ui, sans-serif !important;
+  font-family: 'Poppins', system-ui, sans-serif !important;
 }
 
 .stApp {
@@ -27,18 +20,69 @@ html, body, [class*="css"] {
   color: var(--text) !important;
 }
 
+/* Rainbow animated title */
+@keyframes rainbow {
+  0%   { color: #ff0000; text-shadow: 0 0 20px #ff0000, 0 0 40px #ff000066; }
+  10%  { color: #ff6600; text-shadow: 0 0 20px #ff6600, 0 0 40px #ff660066; }
+  20%  { color: #ffcc00; text-shadow: 0 0 20px #ffcc00, 0 0 40px #ffcc0066; }
+  30%  { color: #33ff00; text-shadow: 0 0 20px #33ff00, 0 0 40px #33ff0066; }
+  40%  { color: #00ffcc; text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc66; }
+  50%  { color: #0099ff; text-shadow: 0 0 20px #0099ff, 0 0 40px #0099ff66; }
+  60%  { color: #6600ff; text-shadow: 0 0 20px #6600ff, 0 0 40px #6600ff66; }
+  70%  { color: #cc00ff; text-shadow: 0 0 20px #cc00ff, 0 0 40px #cc00ff66; }
+  80%  { color: #ff0099; text-shadow: 0 0 20px #ff0099, 0 0 40px #ff009966; }
+  90%  { color: #ff3333; text-shadow: 0 0 20px #ff3333, 0 0 40px #ff333366; }
+  100% { color: #ff0000; text-shadow: 0 0 20px #ff0000, 0 0 40px #ff000066; }
+}
+
+@keyframes bgPulse {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shimmer {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes borderRainbow {
+  0%   { border-color: #ff0000; box-shadow: 0 0 15px #ff000044; }
+  16%  { border-color: #ff9900; box-shadow: 0 0 15px #ff990044; }
+  33%  { border-color: #ffff00; box-shadow: 0 0 15px #ffff0044; }
+  50%  { border-color: #00ff99; box-shadow: 0 0 15px #00ff9944; }
+  66%  { border-color: #0099ff; box-shadow: 0 0 15px #0099ff44; }
+  83%  { border-color: #cc00ff; box-shadow: 0 0 15px #cc00ff44; }
+  100% { border-color: #ff0000; box-shadow: 0 0 15px #ff000044; }
+}
+
+.rainbow-title {
+  animation: rainbow 1s linear infinite;
+  font-weight: 900 !important;
+  font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  letter-spacing: -1px;
+}
+
+.rainbow-border {
+  animation: borderRainbow 1s linear infinite;
+  border: 2px solid;
+  border-radius: 16px;
+}
+
 /* Sidebar */
 section[data-testid="stSidebar"] {
-  background: var(--surface) !important;
-  border-right: 1px solid var(--border) !important;
+  background: linear-gradient(180deg, #12121a 0%, #0f0f1a 100%) !important;
+  border-right: 1px solid #2a2a3d !important;
 }
-section[data-testid="stSidebar"] * {
-  color: var(--text) !important;
-}
-section[data-testid="stSidebar"] .stSelectbox label,
-section[data-testid="stSidebar"] p {
-  color: var(--text-muted) !important;
-}
+section[data-testid="stSidebar"] * { color: var(--text) !important; }
+section[data-testid="stSidebar"] p { color: var(--muted) !important; }
 
 /* Hide Streamlit branding */
 #MainMenu, footer, header { visibility: hidden !important; }
@@ -46,161 +90,132 @@ section[data-testid="stSidebar"] p {
 [data-testid="stToolbar"] { visibility: hidden !important; }
 
 /* Headings */
-h1 { color: var(--text) !important; font-size: 2rem !important; font-weight: 700 !important; }
-h2 { color: var(--text) !important; font-weight: 600 !important; }
-h3 { color: var(--text) !important; font-weight: 600 !important; }
-h4, h5, h6 { color: var(--text) !important; }
+h1 { color: var(--text) !important; font-weight: 800 !important; }
+h2, h3, h4, h5, h6 { color: var(--text) !important; font-weight: 700 !important; }
 p, span, label { color: var(--text) !important; }
 
 /* Metric cards */
 [data-testid="stMetric"] {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 10px !important;
-  padding: 1rem 1.25rem !important;
+  border-radius: 14px !important;
+  padding: 1.2rem 1.5rem !important;
 }
 [data-testid="stMetric"] label {
-  color: var(--text-muted) !important;
+  color: var(--muted) !important;
   font-size: .75rem !important;
   text-transform: uppercase !important;
-  letter-spacing: .05em !important;
+  letter-spacing: .08em !important;
 }
 [data-testid="stMetricValue"] {
-  color: var(--cyan) !important;
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 1.8rem !important;
+  font-weight: 700 !important;
 }
-[data-testid="stMetricDelta"] { font-size: .8rem !important; }
 
 /* Tabs */
 [data-testid="stTabs"] button {
   background: transparent !important;
-  color: var(--text-muted) !important;
+  color: var(--muted) !important;
   border-bottom: 2px solid transparent !important;
   border-radius: 0 !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   transition: all .2s !important;
 }
 [data-testid="stTabs"] button[aria-selected="true"] {
-  color: var(--cyan) !important;
-  border-bottom-color: var(--cyan) !important;
+  color: #a855f7 !important;
+  border-bottom-color: #a855f7 !important;
   background: transparent !important;
-}
-[data-testid="stTabs"] [data-testid="stMarkdownContainer"] p {
-  color: var(--text) !important;
 }
 
 /* Buttons */
 .stButton > button {
-  background: var(--cyan) !important;
-  color: #000 !important;
+  background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+  color: #fff !important;
   border: none !important;
-  border-radius: 6px !important;
-  font-family: 'Space Grotesk', sans-serif !important;
-  font-weight: 600 !important;
-  padding: .5rem 1.25rem !important;
-  transition: all .2s !important;
+  border-radius: 10px !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  padding: .6rem 1.5rem !important;
+  transition: all .25s !important;
+  letter-spacing: .02em !important;
 }
 .stButton > button:hover {
-  opacity: .9 !important;
-  transform: translateY(-1px) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(168,85,247,.4) !important;
 }
 .stDownloadButton > button {
-  background: rgba(0,212,255,.1) !important;
-  color: var(--cyan) !important;
-  border: 1px solid rgba(0,212,255,.3) !important;
-  border-radius: 6px !important;
+  background: rgba(168,85,247,.1) !important;
+  color: #a855f7 !important;
+  border: 1px solid rgba(168,85,247,.35) !important;
+  border-radius: 10px !important;
   font-weight: 600 !important;
 }
 
-/* Inputs / Selects */
-.stTextInput input, .stTextArea textarea, .stSelectbox select,
+/* Inputs */
+.stTextInput input, .stTextArea textarea,
 [data-baseweb="select"] div, [data-baseweb="input"] input,
 [data-baseweb="textarea"] textarea {
   background: var(--surface2) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 6px !important;
+  border-radius: 10px !important;
   color: var(--text) !important;
-  font-family: 'Space Grotesk', sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 .stTextInput input:focus, .stTextArea textarea:focus {
-  border-color: var(--cyan) !important;
-  box-shadow: 0 0 0 2px rgba(0,212,255,.1) !important;
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 3px rgba(168,85,247,.15) !important;
 }
 [data-baseweb="select"] { background: var(--surface2) !important; }
 
 /* File uploader */
 [data-testid="stFileUploader"] {
-  background: rgba(0,212,255,.03) !important;
-  border: 2px dashed rgba(0,212,255,.25) !important;
-  border-radius: 10px !important;
+  background: rgba(168,85,247,.04) !important;
+  border: 2px dashed rgba(168,85,247,.3) !important;
+  border-radius: 14px !important;
   padding: 2rem !important;
 }
 [data-testid="stFileUploader"]:hover {
-  border-color: var(--cyan) !important;
-  background: rgba(0,212,255,.06) !important;
+  border-color: #a855f7 !important;
+  background: rgba(168,85,247,.08) !important;
 }
 
 /* Dataframe */
 [data-testid="stDataFrame"] {
   border: 1px solid var(--border) !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   overflow: hidden !important;
 }
 
 /* Alerts */
 [data-testid="stAlert"] {
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   border-left: 4px solid !important;
 }
-[data-testid="stAlert"][kind="info"] { border-left-color: var(--cyan) !important; background: rgba(0,212,255,.06) !important; }
-[data-testid="stAlert"][kind="success"] { border-left-color: var(--green) !important; background: rgba(16,185,129,.06) !important; }
-[data-testid="stAlert"][kind="warning"] { border-left-color: var(--amber) !important; background: rgba(245,158,11,.06) !important; }
-[data-testid="stAlert"][kind="error"] { border-left-color: var(--red) !important; background: rgba(239,68,68,.06) !important; }
-
-/* Divider */
-hr { border-color: var(--border) !important; }
 
 /* Expander */
 [data-testid="stExpander"] {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
 }
-[data-testid="stExpander"] summary {
-  color: var(--text) !important;
-  font-weight: 600 !important;
-}
+[data-testid="stExpander"] summary { color: var(--text) !important; font-weight: 600 !important; }
 
 /* Multiselect */
 [data-baseweb="tag"] {
-  background: rgba(0,212,255,.12) !important;
-  color: var(--cyan) !important;
+  background: rgba(168,85,247,.15) !important;
+  color: #a855f7 !important;
   border-radius: 999px !important;
 }
-
-/* Slider */
-[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
-  background: var(--cyan) !important;
-}
-
-/* Checkbox */
-[data-testid="stCheckbox"] label span { color: var(--text) !important; }
-
-/* Radio */
-[data-testid="stRadio"] label span { color: var(--text) !important; }
-
-/* Plot / Chart background */
-.js-plotly-plot { background: transparent !important; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 5px; }
+::-webkit-scrollbar-thumb { background: #2a2a3d; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #a855f7; }
 
-/* Option menu overrides */
-nav-pills .nav-link { color: var(--text-muted) !important; }
-nav-pills .nav-link.active { background: var(--cyan) !important; color: #000 !important; }
+/* Plot */
+.js-plotly-plot { background: transparent !important; }
 </style>
 """
 
@@ -209,67 +224,80 @@ SIDEBAR_CSS = """
 .sidebar-logo {
   display: flex; align-items: center; gap: .6rem;
   padding: 1rem 0 1.5rem;
-  border-bottom: 1px solid #1E293B;
+  border-bottom: 1px solid #2a2a3d;
   margin-bottom: 1rem;
 }
-.sidebar-logo-icon { font-size: 1.8rem; color: #00D4FF; }
-.sidebar-logo-text { font-size: 1.15rem; font-weight: 700; color: #E2E8F0; }
-.sidebar-logo-text span { color: #00D4FF; }
+.sidebar-logo-icon {
+  font-size: 1.8rem;
+  animation: rainbow 1s linear infinite;
+}
+@keyframes rainbow {
+  0%   { color: #ff0000; }
+  16%  { color: #ff9900; }
+  33%  { color: #ffff00; }
+  50%  { color: #00ff99; }
+  66%  { color: #0099ff; }
+  83%  { color: #cc00ff; }
+  100% { color: #ff0000; }
+}
+.sidebar-logo-text { font-size: 1.15rem; font-weight: 800; color: #f0f0ff; letter-spacing: -.5px; }
+.sidebar-logo-text span { color: #a855f7; }
 
 .ds-card {
-  background: rgba(0,212,255,.06);
-  border: 1px solid rgba(0,212,255,.15);
-  border-radius: 8px;
+  background: rgba(168,85,247,.07);
+  border: 1px solid rgba(168,85,247,.2);
+  border-radius: 10px;
   padding: .75rem 1rem;
   margin-bottom: 1.25rem;
 }
-.ds-card-name { font-size: .82rem; font-weight: 600; color: #E2E8F0; }
-.ds-card-stats { font-size: .72rem; color: #00D4FF; margin-top: 2px; }
-.ds-card-empty { border-color: #1E293B; background: rgba(255,255,255,.02); }
-.ds-card-empty .ds-card-name { color: #94A3B8; }
-.ds-card-empty .ds-card-stats { color: #475569; }
+.ds-card-name { font-size: .82rem; font-weight: 700; color: #f0f0ff; }
+.ds-card-stats { font-size: .72rem; color: #a855f7; margin-top: 3px; }
+.ds-card-empty { border-color: #2a2a3d; background: rgba(255,255,255,.02); }
+.ds-card-empty .ds-card-name { color: #8888aa; }
+.ds-card-empty .ds-card-stats { color: #55557a; }
 </style>
 """
 
 
 def kpi_row_html(stats: list) -> str:
+    colors = ["#ff6b6b", "#ffd93d", "#6bcb77", "#4d96ff", "#c77dff", "#ff9f1c"]
     cards = ""
-    colors = ["#00D4FF", "#7C3AED", "#FF006E", "#10B981", "#F59E0B", "#EF4444"]
     for i, (label, value) in enumerate(stats):
         c = colors[i % len(colors)]
         cards += f"""
-        <div style="background:#0D1528;border:1px solid #1E293B;border-radius:10px;
-                    padding:1rem 1.4rem;position:relative;overflow:hidden;flex:1;min-width:130px;">
-          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:{c};"></div>
+        <div style="background:#12121a;border:1px solid #2a2a3d;border-radius:14px;
+                    padding:1.1rem 1.4rem;position:relative;overflow:hidden;flex:1;min-width:120px;">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;
+                      background:linear-gradient(90deg,{c},{c}88);"></div>
           <div style="font-family:'JetBrains Mono',monospace;font-size:1.7rem;font-weight:700;
                       color:{c};">{value}</div>
-          <div style="font-size:.72rem;color:#94A3B8;text-transform:uppercase;
-                      letter-spacing:.06em;margin-top:.2rem;">{label}</div>
+          <div style="font-size:.7rem;color:#8888aa;text-transform:uppercase;
+                      letter-spacing:.08em;margin-top:.2rem;">{label}</div>
         </div>"""
     return f'<div style="display:flex;gap:.75rem;flex-wrap:wrap;margin:1rem 0;">{cards}</div>'
 
 
 def section_header(icon: str, title: str, subtitle: str = "") -> str:
-    sub = f'<div style="color:#94A3B8;font-size:.9rem;margin-top:.2rem;">{subtitle}</div>' if subtitle else ""
+    sub = f'<div style="color:#8888aa;font-size:.88rem;margin-top:.2rem;">{subtitle}</div>' if subtitle else ""
     return f"""
-    <div style="margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #1E293B;">
+    <div style="margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #2a2a3d;">
       <div style="display:flex;align-items:center;gap:.6rem;">
         <span style="font-size:1.4rem;">{icon}</span>
-        <h2 style="margin:0;font-size:1.4rem;font-weight:700;color:#E2E8F0;">{title}</h2>
+        <h2 style="margin:0;font-size:1.4rem;font-weight:700;color:#f0f0ff;">{title}</h2>
       </div>
       {sub}
     </div>"""
 
 
-def badge(text: str, color: str = "cyan") -> str:
+def badge(text: str, color: str = "purple") -> str:
     colors = {
-        "cyan": ("rgba(0,212,255,.12)", "#00D4FF"),
-        "purple": ("rgba(124,58,237,.12)", "#a78bfa"),
-        "pink": ("rgba(255,0,110,.12)", "#fb7185"),
-        "green": ("rgba(16,185,129,.12)", "#10B981"),
-        "amber": ("rgba(245,158,11,.12)", "#F59E0B"),
-        "red": ("rgba(239,68,68,.12)", "#EF4444"),
-        "gray": ("rgba(148,163,184,.08)", "#94A3B8"),
+        "purple": ("rgba(168,85,247,.15)", "#a855f7"),
+        "cyan":   ("rgba(0,212,255,.12)", "#00D4FF"),
+        "pink":   ("rgba(255,0,110,.12)", "#fb7185"),
+        "green":  ("rgba(16,185,129,.12)", "#10B981"),
+        "amber":  ("rgba(245,158,11,.12)", "#F59E0B"),
+        "red":    ("rgba(239,68,68,.12)", "#EF4444"),
+        "gray":   ("rgba(148,163,184,.08)", "#8888aa"),
     }
     bg, fg = colors.get(color, colors["gray"])
     return f'<span style="background:{bg};color:{fg};padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-weight:600;font-family:monospace;">{text}</span>'
