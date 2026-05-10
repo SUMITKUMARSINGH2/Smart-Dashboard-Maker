@@ -12,12 +12,16 @@ st.set_page_config(
 
 from home import home_page
 from filesin import file_upload
+from connector import connect_page
 from dataover import data_overview
+from quality import data_quality_page
 from profiling import data_profiling
 from eda_page import eda_page
+from viz_tools import viz_tools_page
 from dashgen import generate_dash_app
 from editdash import edit_dashboard
 from ml_page import ml_insights
+from export_share import export_share_page
 
 # ── Global CSS ─────────────────────────────────────────────────────────────────
 st.markdown(DARK_CSS + SIDEBAR_CSS, unsafe_allow_html=True)
@@ -79,23 +83,31 @@ with st.sidebar:
     nav_options = [
         "Home",
         "File Upload",
+        "Connect & Import",
         "Data Overview",
+        "Data Quality",
         "Data Profiling",
         "EDA & Statistics",
+        "Visualization Tools",
         "Dashboard Generator",
         "Chart Builder",
         "ML Insights",
+        "Export & Share",
     ]
 
     nav_icons = [
         "house-fill",
         "cloud-upload",
+        "plug",
         "table",
+        "shield-check",
         "search",
         "graph-up",
+        "palette",
         "bar-chart-line",
         "pencil-square",
         "cpu",
+        "share",
     ]
 
     default_idx = 0
@@ -134,15 +146,23 @@ if app == "Home":
     home_page()
 elif app == "File Upload":
     file_upload()
+elif app == "Connect & Import":
+    connect_page()
 elif app == "Data Overview":
     data_overview()
+elif app == "Data Quality":
+    data_quality_page()
 elif app == "Data Profiling":
     data_profiling()
 elif app == "EDA & Statistics":
     eda_page()
+elif app == "Visualization Tools":
+    viz_tools_page()
 elif app == "Dashboard Generator":
     generate_dash_app()
 elif app == "Chart Builder":
     edit_dashboard()
 elif app == "ML Insights":
     ml_insights()
+elif app == "Export & Share":
+    export_share_page()

@@ -29,7 +29,7 @@ def ml_insights():
         st.warning("At least 2 numeric columns are required for ML analysis.")
         return
 
-    tab1, tab2, tab3, tab4 = st.tabs(["🔵 Clustering (K-Means)", "📉 PCA", "⚠️ Anomaly Detection", "⭐ Feature Importance"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔵 Clustering (K-Means)", "📉 PCA", "⚠️ Anomaly Detection", "⭐ Feature Importance", "🏆 AutoML Leaderboard"])
 
     # ── K-Means ────────────────────────────────────────────────────────────────
     with tab1:
@@ -202,3 +202,136 @@ def ml_insights():
                              title=f"Feature Importance → predicting '{target}'")
                 fig.update_layout(**PLOTLY_THEME)
                 st.plotly_chart(fig, use_container_width=True)
+
+    # ── AutoML Leaderboard ─────────────────────────────────────────────────────
+    with tab5:
+        from sklearn.ensemble import (RandomForestRegressor, RandomForestClassifier,
+                                      GradientBoostingRegressor, GradientBoostingClassifier,
+                                      AdaBoostRegressor, AdaBoostClassifier,
+                                      ExtraTreesRegressor, ExtraTreesClassifier)
+        from sklearn.linear_model import (LinearRegression, Ridge, Lasso,
+                                          LogisticRegression, RidgeClassifier)
+        from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
+        from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
+        from sklearn.preprocessing import LabelEncoder, StandardScaler
+        from sklearn.model_selection import cross_val_score
+        import warnings
+
+        st.markdown("""
+        <div style="background:rgba(129,140,248,.05);border:1px solid rgba(129,140,248,.15);
+                    border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.83rem;color:#7c7f96;">
+          Automatically trains multiple models and ranks them by performance.
+          Select a target column and feature columns, then run the leaderboard.
+        </div>
+        """, unsafe_allow_html=True)
+
+        cat_cols_aml = df.select_dtypes(include=["object","category"]).columns.tolist()
+        all_cols_aml = num_cols + cat_cols_aml
+        aml_target = st.selectbox("Target column", all_cols_aml, key="aml_target")
+        aml_feats = st.multiselect(
+            "Feature columns (numeric)",
+            [c for c in num_cols if c != aml_target],
+            default=[c for c in num_cols if c != aml_target][:min(6, len(num_cols))],
+            key="aml_feats"
+        )
+        aml_cv = st.slider("Cross-validation folds", 2, 10, 5, key="aml_cv")
+
+        if st.button("🏆 Run AutoML Leaderboard", key="run_aml") and aml_feats:
+            with st.spinner("Training all models — this may take a moment…"):
+                warnings.filterwarnings("ignore")
+                X_df = df[aml_feats].dropna()
+                y_raw = df[aml_target].loc[X_df.index]
+                valid = y_raw.notna()
+                X_df = X_df[valid]
+                y_raw = y_raw[valid]
+
+                is_class = not pd.api.types.is_numeric_dtype(y_raw)
+                if is_class:
+                    le = LabelEncoder()
+                    y = le.fit_transform(y_raw.astype(str))
+                    n_classes = len(np.unique(y))
+                    multi = n_classes > 2
+
+                    models = [
+                        ("Random Forest",       RandomForestClassifier(n_estimators=100, random_state=42)),
+                        ("Gradient Boosting",   GradientBoostingClassifier(n_estimators=100, random_state=42)),
+                        ("Extra Trees",         ExtraTreesClassifier(n_estimators=100, random_state=42)),
+                        ("AdaBoost",            AdaBoostClassifier(n_estimators=100, random_state=42)),
+                        ("Decision Tree",       DecisionTreeClassifier(random_state=42)),
+                        ("Logistic Regression", LogisticRegression(max_iter=500, random_state=42)),
+                        ("Ridge Classifier",    RidgeClassifier()),
+                        ("KNN",                 KNeighborsClassifier(n_neighbors=5)),
+                    ]
+                    scoring = "f1_weighted" if multi else "f1"
+                    metric_label = "F1 Score (weighted)" if multi else "F1 Score"
+                else:
+                    y = y_raw.values
+                    models = [
+                        ("Random Forest",      RandomForestRegressor(n_estimators=100, random_state=42)),
+                        ("Gradient Boosting",  GradientBoostingRegressor(n_estimators=100, random_state=42)),
+                        ("Extra Trees",        ExtraTreesRegressor(n_estimators=100, random_state=42)),
+                        ("AdaBoost",           AdaBoostRegressor(n_estimators=100, random_state=42)),
+                        ("Decision Tree",      DecisionTreeRegressor(random_state=42)),
+                        ("Linear Regression",  LinearRegression()),
+                        ("Ridge",              Ridge()),
+                        ("Lasso",              Lasso()),
+                        ("KNN",                KNeighborsRegressor(n_neighbors=5)),
+                    ]
+                    scoring = "r2"
+                    metric_label = "R² Score"
+
+                scaler = StandardScaler()
+                X_scaled = scaler.fit_transform(X_df)
+
+                results = []
+                progress = st.progress(0)
+                for i, (name, model) in enumerate(models):
+                    try:
+                        scores = cross_val_score(model, X_scaled, y, cv=aml_cv, scoring=scoring, n_jobs=-1)
+                        results.append({
+                            "Model": name,
+                            metric_label: round(scores.mean(), 4),
+                            "Std Dev": round(scores.std(), 4),
+                            "Min": round(scores.min(), 4),
+                            "Max": round(scores.max(), 4),
+                        })
+                    except Exception:
+                        pass
+                    progress.progress((i + 1) / len(models))
+
+                progress.empty()
+
+                if results:
+                    lb_df = pd.DataFrame(results).sort_values(metric_label, ascending=False).reset_index(drop=True)
+                    lb_df.index += 1
+                    lb_df.index.name = "Rank"
+
+                    best = lb_df.iloc[0]
+                    st.markdown(f"""
+                    <div style="background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(168,85,247,.06));
+                                border:1px solid rgba(251,191,36,.25);border-radius:14px;
+                                padding:1.2rem 1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden;">
+                      <div style="position:absolute;top:0;left:0;right:0;height:2px;
+                                  background:linear-gradient(90deg,#fbbf24,#a855f7);"></div>
+                      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;
+                                  letter-spacing:.1em;color:#fbbf24;margin-bottom:.3rem;">🏆 Best Model</div>
+                      <div style="font-size:1.4rem;font-weight:900;color:#f1f2f6;">{best['Model']}</div>
+                      <div style="color:#7c7f96;font-size:.82rem;margin-top:.2rem;">
+                        {metric_label}: <b style="color:#fbbf24;">{best[metric_label]:.4f}</b>
+                        &nbsp;±&nbsp;{best['Std Dev']:.4f}
+                      </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    st.dataframe(lb_df, use_container_width=True)
+
+                    fig = px.bar(
+                        lb_df.sort_values(metric_label),
+                        x=metric_label, y="Model", orientation="h",
+                        color=metric_label,
+                        color_continuous_scale="Plasma",
+                        title=f"AutoML Leaderboard — {metric_label}",
+                        error_x="Std Dev",
+                    )
+                    fig.update_layout(**PLOTLY_THEME)
+                    st.plotly_chart(fig, use_container_width=True)
