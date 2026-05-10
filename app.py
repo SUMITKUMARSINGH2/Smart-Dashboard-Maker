@@ -22,6 +22,7 @@ from dashgen import generate_dash_app
 from editdash import edit_dashboard
 from ml_page import ml_insights
 from export_share import export_share_page
+from nlq_page import nlq_page
 
 # ── Global CSS ─────────────────────────────────────────────────────────────────
 st.markdown(DARK_CSS + SIDEBAR_CSS, unsafe_allow_html=True)
@@ -88,6 +89,7 @@ with st.sidebar:
         "Data Quality",
         "Data Profiling",
         "EDA & Statistics",
+        "Natural Language Query",
         "Visualization Tools",
         "Dashboard Generator",
         "Chart Builder",
@@ -103,6 +105,7 @@ with st.sidebar:
         "shield-check",
         "search",
         "graph-up",
+        "chat-dots",
         "palette",
         "bar-chart-line",
         "pencil-square",
@@ -156,6 +159,8 @@ elif app == "Data Profiling":
     data_profiling()
 elif app == "EDA & Statistics":
     eda_page()
+elif app == "Natural Language Query":
+    nlq_page()
 elif app == "Visualization Tools":
     viz_tools_page()
 elif app == "Dashboard Generator":
