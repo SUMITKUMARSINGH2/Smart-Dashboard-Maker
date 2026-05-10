@@ -56,11 +56,39 @@ async function doUpload() {
   }
 }
 
+function showQualityBadge(q) {
+  if (!q) return;
+  const gradeEl = document.getElementById("qualityGrade");
+  gradeEl.textContent = q.grade;
+  gradeEl.style.color = q.color;
+  gradeEl.style.borderColor = q.color;
+  gradeEl.style.boxShadow = `0 0 18px ${q.color}44`;
+  document.getElementById("qualityScore").textContent = `${q.score}/100`;
+  document.getElementById("qualityScore").style.color = q.color;
+
+  const barsEl = document.getElementById("qualityBars");
+  barsEl.innerHTML = Object.values(q.dimensions).map(d => `
+    <div class="q-bar-row">
+      <span class="q-bar-label">${d.label}</span>
+      <div class="q-bar-track">
+        <div class="q-bar-fill" style="width:${(d.score/d.max)*100}%;background:${q.color}"></div>
+      </div>
+      <span class="q-bar-score">${d.score}/${d.max}</span>
+    </div>`).join("");
+
+  const tipsEl = document.getElementById("qualityTips");
+  tipsEl.innerHTML = q.tips.map(t =>
+    `<div class="q-tip"><span class="q-tip-icon">${q.grade === "A" ? "✓" : "⚠"}</span><span>${t}</span></div>`
+  ).join("");
+}
+
 function showPreview(data) {
   document.getElementById("previewArea").classList.remove("hidden");
   document.getElementById("previewTitle").textContent = data.filename;
   document.getElementById("previewStats").textContent =
     `${data.rows.toLocaleString()} rows · ${data.cols} columns`;
+
+  showQualityBadge(data.quality);
 
   renderTable("previewTable", data.preview, data.columns);
 

@@ -49,6 +49,74 @@ def _col_types(df):
             out[c] = "categorical"
     return out
 
+# ── data quality score ────────────────────────────────────────────────────────
+def _quality_score(df):
+    """Return a 0-100 score, letter grade, and per-dimension breakdown."""
+    rows, cols = df.shape
+
+    # 1. Completeness (40 pts): how complete the data is (no missing values)
+    total_cells = rows * cols
+    missing_cells = int(df.isnull().sum().sum())
+    completeness = max(0.0, 1.0 - missing_cells / total_cells) if total_cells else 1.0
+    completeness_pts = round(completeness * 40, 1)
+
+    # 2. Uniqueness (30 pts): penalise for duplicate rows
+    dup_count = int(df.duplicated().sum())
+    uniqueness = max(0.0, 1.0 - dup_count / rows) if rows else 1.0
+    uniqueness_pts = round(uniqueness * 30, 1)
+
+    # 3. Type richness (20 pts): ratio of non-object columns
+    typed_cols = df.select_dtypes(exclude="object").shape[1]
+    type_ratio = typed_cols / cols if cols else 0
+    type_pts = round(type_ratio * 20, 1)
+
+    # 4. Column naming (10 pts): penalise unnamed/blank headers
+    bad_names = sum(
+        1 for c in df.columns
+        if str(c).strip() == "" or str(c).lower().startswith("unnamed")
+    )
+    naming_pts = round(max(0.0, 1.0 - bad_names / cols) * 10, 1)
+
+    score = round(completeness_pts + uniqueness_pts + type_pts + naming_pts, 1)
+
+    if score >= 90:   grade, color = "A", "#10B981"
+    elif score >= 80: grade, color = "B", "#00D4FF"
+    elif score >= 70: grade, color = "C", "#F59E0B"
+    elif score >= 60: grade, color = "D", "#FF6B00"
+    else:             grade, color = "F", "#EF4444"
+
+    tips = []
+    if completeness < 0.95:
+        pct = round((1 - completeness) * 100, 1)
+        tips.append(f"{pct}% of values are missing — consider imputation or dropping columns")
+    if dup_count > 0:
+        tips.append(f"{dup_count:,} duplicate rows found — use Data Cleaning to remove them")
+    if type_ratio < 0.3:
+        tips.append("Most columns are text — consider casting numeric columns for analysis")
+    if bad_names > 0:
+        tips.append(f"{bad_names} unnamed column(s) — rename them for better readability")
+    if not tips:
+        tips.append("Dataset looks clean and well-structured!")
+
+    return {
+        "score": score,
+        "grade": grade,
+        "color": color,
+        "dimensions": {
+            "completeness": {"score": completeness_pts, "max": 40,
+                             "label": "Completeness", "pct": round(completeness * 100, 1)},
+            "uniqueness":   {"score": uniqueness_pts,   "max": 30,
+                             "label": "Uniqueness",    "pct": round(uniqueness * 100, 1)},
+            "type_richness":{"score": type_pts,         "max": 20,
+                             "label": "Type Richness",  "pct": round(type_ratio * 100, 1)},
+            "naming":       {"score": naming_pts,        "max": 10,
+                             "label": "Column Naming",  "pct": round((1 - bad_names / cols) * 100 if cols else 100, 1)},
+        },
+        "tips": tips,
+        "missing_cells": missing_cells,
+        "dup_rows": dup_count,
+    }
+
 # ── upload ────────────────────────────────────────────────────────────────────
 @data_bp.route("/upload", methods=["POST"])
 def api_upload():
@@ -86,6 +154,7 @@ def api_upload():
             dtypes={c: str(df[c].dtype) for c in df.columns},
             missing={c: int(df[c].isna().sum()) for c in df.columns},
             detected_sep=sep,
+            quality=_quality_score(df),
         )
     except Exception as e:
         return jsonify(error=str(e), tb=traceback.format_exc()), 500

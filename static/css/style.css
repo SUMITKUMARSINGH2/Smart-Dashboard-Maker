@@ -253,6 +253,47 @@ a:hover { text-decoration: underline; }
 .btn-block { width: 100%; justify-content: center; }
 .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 
+/* ─── Data Quality Badge ────────────────────────────────────────────────────── */
+.quality-header {
+  display: flex; align-items: flex-start; gap: 2rem; flex-wrap: wrap;
+}
+.quality-grade-wrap {
+  display: flex; align-items: center; gap: 1rem; flex-shrink: 0;
+}
+.quality-grade {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 3px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; font-weight: 800; color: var(--cyan);
+  font-family: var(--mono); transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+.quality-score-label {
+  font-size: .75rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text-muted); font-weight: 600;
+}
+.quality-score-num {
+  font-size: 1.5rem; font-weight: 700; font-family: var(--mono);
+  color: var(--cyan); transition: color 0.4s;
+}
+.quality-bars { flex: 1; display: flex; flex-direction: column; gap: .55rem; min-width: 200px; }
+.q-bar-row { display: flex; align-items: center; gap: .6rem; }
+.q-bar-label { font-size: .72rem; color: var(--text-muted); width: 100px; flex-shrink: 0; }
+.q-bar-track {
+  flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.q-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.q-bar-score { font-size: .7rem; font-family: var(--mono); color: var(--text-muted); width: 36px; text-align: right; }
+.quality-tips {
+  margin-top: 1rem; display: flex; flex-direction: column; gap: .4rem;
+  border-top: 1px solid var(--border); padding-top: .85rem;
+}
+.q-tip {
+  display: flex; align-items: baseline; gap: .5rem;
+  font-size: .8rem; color: var(--text-muted);
+}
+.q-tip-icon { font-size: .75rem; color: var(--cyan); flex-shrink: 0; }
+
 /* ─── Forms ────────────────────────────────────────────────────────────────── */
 .form-group { margin-bottom: 1rem; }
 .form-label { display: block; font-size: .8rem; font-weight: 500; color: var(--text-muted); margin-bottom: .35rem; }
