@@ -1,6 +1,5 @@
 import streamlit as st
-from styles import DARK_CSS, SIDEBAR_CSS, section_header, kpi_row_html, badge
-from shared_store import load_shared, get_meta as bridge_meta, bridge_exists
+from .styles import DARK_CSS, SIDEBAR_CSS, section_header, kpi_row_html, badge
 
 RAINBOW_FLOW_CSS = """
 <style>

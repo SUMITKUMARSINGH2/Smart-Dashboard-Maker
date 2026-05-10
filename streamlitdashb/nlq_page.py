@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import re
 from difflib import get_close_matches
-from styles import DARK_CSS, section_header
+from .styles import DARK_CSS, section_header
 
 PLOTLY_THEME = dict(
     template="plotly_dark",

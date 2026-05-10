@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 import random
-from styles import DARK_CSS, section_header, kpi_row_html
+from .styles import DARK_CSS, section_header, kpi_row_html
 
 PLOTLY_THEME = dict(
     template="plotly_dark",

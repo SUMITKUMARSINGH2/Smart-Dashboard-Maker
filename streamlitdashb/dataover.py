@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from styles import DARK_CSS, section_header, kpi_row_html, badge
+from .styles import DARK_CSS, section_header, kpi_row_html, badge
 
 def data_overview():
     st.markdown(DARK_CSS, unsafe_allow_html=True)
