@@ -394,8 +394,12 @@ def api_annotations():
 @data_bp.route("/sample/<name>")
 def api_sample(name):
     try:
-        import seaborn as sns
-        df = sns.load_dataset(name)
+        if name == "sales":
+            # Load local sample file
+            df = pd.read_csv("../../../sample_sales_data.csv")
+        else:
+            import seaborn as sns
+            df = sns.load_dataset(name)
         df.columns = [str(c).strip() for c in df.columns]
         set_store(raw_df=df.copy(), df=df.copy(), filename=f"{name}.csv", annotations={})
         return jsonify(

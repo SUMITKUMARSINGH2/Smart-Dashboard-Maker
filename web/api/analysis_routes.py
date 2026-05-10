@@ -31,7 +31,9 @@ def api_corr():
             text=np.round(corr.values,2),
             texttemplate="%{text}", hovertemplate="%{x} × %{y}: %{z:.3f}<extra></extra>",
         ))
-        fig.update_layout(**_layout(f"{method.title()} Correlation Matrix"))
+        fig.update_layout(**_layout(f"{method.title()} Correlation Matrix"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -56,12 +58,16 @@ def api_dist():
                 ys = kde(xs) * len(s) * (s.max()-s.min()) / bins
                 fig.add_trace(go.Scatter(x=xs, y=ys, mode="lines", name="KDE",
                                          line=dict(color=PALETTE[1], width=2)))
-            fig.update_layout(**_layout(f"Distribution of {col}"))
+            fig.update_layout(**_layout(f"Distribution of {col}"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         else:
             vc = df[col].value_counts().head(30)
             fig = go.Figure(go.Bar(x=vc.index.astype(str), y=vc.values,
                                    marker_color=PALETTE[0]))
-            fig.update_layout(**_layout(f"Value Counts: {col}"))
+            fig.update_layout(**_layout(f"Value Counts: {col}"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -78,7 +84,9 @@ def api_box():
         for i, c in enumerate(cols):
             fig.add_trace(go.Box(y=df[c].dropna(), name=c,
                                  marker_color=PALETTE[i % len(PALETTE)]))
-        fig.update_layout(**_layout("Box Plots"))
+        fig.update_layout(**_layout("Box Plots"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -95,7 +103,9 @@ def api_scatter():
         fig = px.scatter(df, x=x, y=y, **kwargs,
                          color_discrete_sequence=PALETTE,
                          trendline="ols")
-        fig.update_layout(**_layout(f"{x} vs {y}"))
+        fig.update_layout(**_layout(f"{x} vs {y}"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -153,7 +163,9 @@ def api_ts_trend():
                                  name=val_col, line=dict(color=PALETTE[0], width=1.5), opacity=0.7))
         fig.add_trace(go.Scatter(x=d[date_col], y=d["rolling"], mode="lines",
                                  name=f"{window}-period MA", line=dict(color=PALETTE[1], width=2.5)))
-        fig.update_layout(**_layout(f"{val_col} Trend"))
+        fig.update_layout(**_layout(f"{val_col} Trend"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -172,7 +184,9 @@ def api_ts_growth():
         fig = go.Figure()
         fig.add_trace(go.Bar(x=d[date_col], y=d["growth"], name="Growth %",
                              marker_color=[PALETTE[2] if v < 0 else PALETTE[0] for v in d["growth"]]))
-        fig.update_layout(**_layout(f"{val_col} Period-over-Period Growth %"))
+        fig.update_layout(**_layout(f"{val_col} Period-over-Period Growth %"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -194,7 +208,9 @@ def api_ts_decompose():
         fig.add_trace(go.Scatter(x=d.index, y=result.trend,    mode="lines", name="Trend",    line=dict(color=PALETTE[0])))
         fig.add_trace(go.Scatter(x=d.index, y=result.seasonal, mode="lines", name="Seasonal", line=dict(color=PALETTE[1])))
         fig.add_trace(go.Scatter(x=d.index, y=result.resid,    mode="lines", name="Residual", line=dict(color=PALETTE[2])))
-        fig.update_layout(**_layout(f"Seasonal Decomposition of {val_col}"))
+        fig.update_layout(**_layout(f"Seasonal Decomposition of {val_col}"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e)), 500
@@ -239,7 +255,9 @@ def api_outliers():
         for i,c in enumerate(df.select_dtypes(include="number").columns[:10]):
             fig.add_trace(go.Box(y=df[c].dropna(), name=c, marker_color=PALETTE[i%len(PALETTE)],
                                  boxpoints="outliers"))
-        fig.update_layout(**_layout(f"Outlier Detection — {method.upper()}"))
+        fig.update_layout(**_layout(f"Outlier Detection — {method.upper()}"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(results=results, fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e), tb=traceback.format_exc()), 500
@@ -285,7 +303,9 @@ def api_cmp_stats():
                                     side="negative", line_color=PALETTE[0]))
             fig.add_trace(go.Violin(y=df_b[c].dropna(), name=f"{c} (B)",
                                     side="positive", line_color=PALETTE[1]))
-        fig.update_layout(**_layout("Distribution Comparison A vs B"))
+        fig.update_layout(**_layout("Distribution Comparison A vs B"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(stats=stats, common_cols=common, fig=fig_json(fig),
                        shape_a=list(df_a.shape), shape_b=list(df_b.shape))
     except Exception as e:
@@ -298,7 +318,5 @@ def _layout(title=""):
         paper_bgcolor="#0D1528", plot_bgcolor="#0D1528",
         font=dict(color="#94A3B8", family="Space Grotesk, sans-serif"),
         margin=dict(l=40, r=20, t=50, b=40),
-        xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
-        yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94A3B8")),
     )

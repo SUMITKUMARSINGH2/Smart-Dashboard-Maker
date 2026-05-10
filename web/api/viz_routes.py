@@ -63,14 +63,18 @@ def api_dash_charts():
             corr = df[num_cols[:10]].corr()
             fig = go.Figure(go.Heatmap(z=corr.values, x=list(corr.columns),
                                        y=list(corr.columns), colorscale="RdBu_r", zmid=0))
-            fig.update_layout(**_layout("Correlation Heatmap"))
+            fig.update_layout(**_layout("Correlation Heatmap"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             charts.append({"title": "Correlation Heatmap", "fig": fig_json(fig)})
 
         # Distribution of first numeric col
         if num_cols:
             c = num_cols[0]
             fig = go.Figure(go.Histogram(x=df[c].dropna(), marker_color=PALETTE[0], nbinsx=30))
-            fig.update_layout(**_layout(f"Distribution: {c}"))
+            fig.update_layout(**_layout(f"Distribution: {c}"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             charts.append({"title": f"Distribution: {c}", "fig": fig_json(fig)})
 
         # Top categorical
@@ -78,14 +82,18 @@ def api_dash_charts():
             c = cat_cols[0]
             vc = df[c].value_counts().head(15)
             fig = go.Figure(go.Bar(x=vc.index.astype(str), y=vc.values, marker_color=PALETTE[1]))
-            fig.update_layout(**_layout(f"Top Categories: {c}"))
+            fig.update_layout(**_layout(f"Top Categories: {c}"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             charts.append({"title": f"Top: {c}", "fig": fig_json(fig)})
 
         # Scatter first 2 numeric
         if len(num_cols) >= 2:
             fig = go.Figure(go.Scatter(x=df[num_cols[0]], y=df[num_cols[1]],
                                        mode="markers", marker=dict(color=PALETTE[2], opacity=0.6, size=5)))
-            fig.update_layout(**_layout(f"{num_cols[0]} vs {num_cols[1]}"))
+            fig.update_layout(**_layout(f"{num_cols[0]} vs {num_cols[1]}"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             charts.append({"title": f"{num_cols[0]} vs {num_cols[1]}", "fig": fig_json(fig)})
 
         # Box plots
@@ -93,7 +101,9 @@ def api_dash_charts():
             fig = go.Figure()
             for i, c in enumerate(num_cols[:6]):
                 fig.add_trace(go.Box(y=df[c].dropna(), name=c, marker_color=PALETTE[i%len(PALETTE)]))
-            fig.update_layout(**_layout("Box Plots — Numeric Columns"))
+            fig.update_layout(**_layout("Box Plots — Numeric Columns"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             charts.append({"title": "Box Plots", "fig": fig_json(fig)})
 
         # Missing values bar
@@ -102,7 +112,9 @@ def api_dash_charts():
         if len(miss):
             fig = go.Figure(go.Bar(x=miss.index.tolist(), y=miss.values.tolist(),
                                    marker_color=PALETTE[2]))
-            fig.update_layout(**_layout("Missing Values by Column"))
+            fig.update_layout(**_layout("Missing Values by Column"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             charts.append({"title": "Missing Values", "fig": fig_json(fig)})
 
         return jsonify(charts=charts)
@@ -192,7 +204,9 @@ def api_chart_build():
                                bar=dict(color=PALETTE[0]))))
         if fig is None:
             return jsonify(error="Unsupported chart type or missing columns"), 400
-        fig.update_layout(**_layout(title))
+        fig.update_layout(**_layout(title),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(fig=fig_json(fig))
     except Exception as e:
         return jsonify(error=str(e), tb=traceback.format_exc()), 500
@@ -297,7 +311,9 @@ def _nlq_engine(df, q):
         col = find_num_col(q)
         if col:
             fig = go.Figure(go.Histogram(x=df[col].dropna(), marker_color=PALETTE[0]))
-            fig.update_layout(**_layout(f"Distribution of {col}"))
+            fig.update_layout(**_layout(f"Distribution of {col}"),
+                              xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                              yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             return {"type":"chart","answer":f"Distribution of {col}","fig":fig_json(fig)}
 
     # group by
@@ -354,8 +370,6 @@ def _layout(title=""):
         paper_bgcolor="#0D1528", plot_bgcolor="#0D1528",
         font=dict(color="#94A3B8", family="Space Grotesk, sans-serif"),
         margin=dict(l=40, r=20, t=50, b=40),
-        xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
-        yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94A3B8")),
     )
 

@@ -19,8 +19,6 @@ def _layout(title=""):
         paper_bgcolor="#0D1528", plot_bgcolor="#0D1528",
         font=dict(color="#94A3B8", family="Space Grotesk, sans-serif"),
         margin=dict(l=40, r=20, t=50, b=40),
-        xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
-        yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94A3B8")),
     )
 
@@ -75,7 +73,9 @@ def api_kmeans():
                 name=f"Cluster {cd['cluster']} ({cd['size']})",
                 marker=dict(color=PALETTE[cd["cluster"] % len(PALETTE)], size=6, opacity=0.75)
             ))
-        fig.update_layout(**_layout(f"K-Means Clustering (k={k}) — PCA 2D"))
+        fig.update_layout(**_layout(f"K-Means Clustering (k={k}) — PCA 2D"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
 
         # Elbow chart
         fig_elbow = go.Figure(go.Scatter(x=list(range(1,len(inertias)+1)), y=inertias,
@@ -120,7 +120,9 @@ def api_anomaly():
                                  mode="markers", name="Anomaly",
                                  marker=dict(color=PALETTE[2], size=9, opacity=0.9,
                                              symbol="x", line=dict(width=1, color="white"))))
-        fig.update_layout(**_layout(f"Anomaly Detection — {n_anomalies} anomalies ({contamination*100:.0f}% contamination)"))
+        fig.update_layout(**_layout(f"Anomaly Detection — {n_anomalies} anomalies ({contamination*100:.0f}% contamination)"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         # score distribution
         fig_score = go.Figure(go.Histogram(x=scores, marker_color=PALETTE[1], nbinsx=40))
         fig_score.update_layout(**_layout("Anomaly Scores Distribution"))
@@ -170,7 +172,9 @@ def api_feat_imp():
             orientation="h", marker_color=PALETTE[0],
             text=[f"{p[1]:.4f}" for p in pairs], textposition="outside"
         ))
-        fig.update_layout(**_layout(f"Feature Importance → {target}"))
+        fig.update_layout(**_layout(f"Feature Importance → {target}"),
+                          xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                          yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
         return jsonify(ok=True, features=[{"feat":p[0],"importance":round(float(p[1]),6)} for p in pairs],
                        fig=fig_json(fig), model=model_type, target=target)
     except Exception as e:

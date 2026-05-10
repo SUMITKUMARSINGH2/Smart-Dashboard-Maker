@@ -19,8 +19,6 @@ def _layout(title=""):
         paper_bgcolor="#0D1528", plot_bgcolor="#0D1528",
         font=dict(color="#94A3B8", family="Space Grotesk, sans-serif"),
         margin=dict(l=40, r=20, t=50, b=40),
-        xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
-        yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#94A3B8")),
     )
 
@@ -302,7 +300,8 @@ def api_text_analyze():
                 marker_color=PALETTE[0],
             ))
             fig_freq.update_layout(**_layout(f"Word Frequency — {col}"),
-                                   yaxis=dict(autorange="reversed", gridcolor="#1E293B"))
+                                   xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+                                   yaxis=dict(autorange="reversed", gridcolor="#1E293B", zerolinecolor="#1E293B"))
         else:
             fig_freq = go.Figure()
             fig_freq.update_layout(**_layout("No words found"))
@@ -330,7 +329,8 @@ def api_text_analyze():
                 x=polarities, marker_color=PALETTE[1], nbinsx=30, name="Polarity"
             ))
             fig_sent.update_layout(**_layout("Sentiment Polarity Distribution"),
-                                   xaxis_title="Polarity (-1=negative, 1=positive)")
+                                   xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B", title="Polarity (-1=negative, 1=positive)"),
+                                   yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"))
             fig_pie = go.Figure(go.Pie(
                 labels=["Positive","Negative","Neutral"],
                 values=[pos, neg, neu],
