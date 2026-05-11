@@ -1,17 +1,15 @@
 services:
   - type: web
-    name: smart-dashboard-flask
+    name: datavizpro-flask
     runtime: python3
+    rootDir: web
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT web.web_app:app
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 web_app:app
+    plan: free
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: "3.12"
       - key: FLASK_ENV
         value: production
-    autoDeploy: true
-    plan: free
-
-
-
-    
+      - key: SECRET_KEY
+        generateValue: true

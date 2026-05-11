@@ -1,5 +1,5 @@
 import streamlit as st
-from .styles import DARK_CSS, SIDEBAR_CSS, section_header, kpi_row_html, badge
+from styles import DARK_CSS, SIDEBAR_CSS, section_header, kpi_row_html, badge
 
 RAINBOW_FLOW_CSS = """
 <style>
@@ -150,6 +150,15 @@ RAINBOW_FLOW_CSS = """
 </style>
 """
 
+
+def bridge_exists():
+    return False
+
+def bridge_meta():
+    return None
+
+def load_shared():
+    return None, None
 
 def home_page():
     st.markdown(DARK_CSS + SIDEBAR_CSS, unsafe_allow_html=True)

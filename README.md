@@ -1,18 +1,22 @@
 # DataViz Pro
 
-DataViz Pro is a dual-interface analytics project with separate apps for:
-- **Flask web app** (`web/flask_app.py`) using Jinja2 templates and API routes
-- **Streamlit dashboard** (`streamlitdashb/streamlit_app.py`) with interactive notebook-style pages
+DataViz Pro is a full-stack analytics platform built with Flask. Upload a dataset and explore it with interactive dashboards, EDA tools, forecasting, text analytics, and more — all through a modern dark-theme web UI.
 
 ---
 
 ## Key Features
 
-- Upload CSV, Excel, JSON, Parquet, TSV files
-- Data profiling, cleaning, EDA, and visualization tools
-- Auto dashboard and chart builder
-- Time series analysis, forecasting, regression, and machine learning insights
-- Natural language queries, live data feed, annotations, and export options
+- Upload CSV, Excel, JSON, Parquet, or TSV files
+- Auto dashboard with KPIs and smart charts
+- Chart Builder with 20+ chart types
+- EDA & Statistics: correlation, distributions, box plots, scatter, hypothesis testing
+- Time series analysis, seasonal decomposition, ARIMA forecasting
+- Regression analysis (linear, ridge, lasso, polynomial)
+- Text analytics: word frequency, sentiment analysis, word cloud
+- Natural language queries (NLQ) over your data
+- Outlier detection, data profiling, cleaning, and validation rules
+- What-If simulator, dataset comparison, annotations
+- Export to CSV, Excel, JSON
 
 ---
 
@@ -20,10 +24,10 @@ DataViz Pro is a dual-interface analytics project with separate apps for:
 
 | Layer | Technology |
 |---|---|
-| Backend | Python, Flask, Pandas, NumPy |
-| Visualization | Plotly, Streamlit |
-| Data Science | scikit-learn, SciPy, Statsmodels |
-| NLP | TextBlob |
+| Backend | Python 3.12, Flask, Gunicorn |
+| Visualization | Plotly 6.x |
+| Data Science | Pandas, NumPy, scikit-learn, SciPy, Statsmodels |
+| NLP | TextBlob, WordCloud |
 | Frontend | Jinja2 templates, HTML/CSS, JavaScript |
 
 ---
@@ -31,98 +35,66 @@ DataViz Pro is a dual-interface analytics project with separate apps for:
 ## Project Layout
 
 ```
-Smart-Dashboard-Maker/
-├── streamlitdashb/
-│   ├── streamlit_app.py          # Streamlit app entrypoint
-│   ├── home.py                   # Streamlit home page
-│   ├── filesin.py                # File upload page
-│   ├── connector.py              # Connect & import page
-│   ├── dataover.py               # Data overview page
-│   ├── quality.py                # Data quality page
-│   ├── profiling.py              # Data profiling page
-│   ├── eda_page.py               # EDA & statistics page
-│   ├── viz_tools.py              # Visualization tools page
-│   ├── dashgen.py                # Auto dashboard page
-│   ├── editdash.py               # Chart builder page
-│   ├── ml_page.py                # ML insights page
-│   ├── export_share.py           # Export & share page
-│   └── nlq_page.py               # NLQ page
+DataViz-Pro/
 ├── web/
-│   ├── flask_app.py              # Flask app entrypoint
-│   ├── advanced_app.py           # Advanced Flask app
-│   ├── api/                      # Flask API routes
-│   ├── modules/                  # Flask page modules
-│   ├── templates/                # Flask HTML templates
-│   └── static/                   # Static assets for Flask
-├── shared_store.py               # Shared data store
-├── styles.py                     # Shared styles
-├── sample_sales_data.csv
-├── requirements.txt
+│   ├── web_app.py            # Flask app entrypoint (main)
+│   ├── api/
+│   │   ├── data_routes.py    # Upload, preview, cleaning, profiling
+│   │   ├── viz_routes.py     # Chart builder, dashboard, NLQ, live feed
+│   │   ├── analysis_routes.py# EDA, time series, outliers, comparison
+│   │   ├── features_routes.py# Forecasting, regression, text analytics, what-if
+│   │   └── store.py          # Session-based data store
+│   ├── templates/            # Jinja2 HTML templates
+│   ├── static/
+│   │   ├── css/style.css     # App styles
+│   │   └── js/               # Page-specific JavaScript modules
+│   ├── render.yaml           # Render deployment config
+│   └── requirements.txt      # Python dependencies
+├── streamlitdashb/           # Legacy Streamlit dashboard (not the main app)
+├── sample_sales_data.csv     # Sample dataset for quick start
 └── README.md
 ```
 
 ---
 
-## Operating Mode
-
-The two apps are **completely independent**:
-- Each app manages its own data and session state
-- No data sharing or syncing between Flask and Streamlit
-- Run one or both simultaneously on different ports
-
-| App | Port | Data Storage | State |
-|---|---|---|---|
-| **Streamlit** | Auto (usually 8501) | Session memory (ephemeral) | Per-browser session |
-| **Flask** | 5000 | Server-side store | Per-user session |
-
----
-
-## Install Dependencies
+## Running Locally
 
 ```bash
-pip install -r requirements.txt
+# Install dependencies
+pip install -r web/requirements.txt
+
+# Start the Flask app
+cd web && python web_app.py
 ```
+
+Then open [http://localhost:5000](http://localhost:5000).
 
 ---
 
-## Run the Streamlit Dashboard
+## Deployment (Render)
 
-```bash
-streamlit run streamlitdashb/streamlit_app.py
+The `web/render.yaml` is pre-configured for [Render](https://render.com):
+
+```yaml
+services:
+  - type: web
+    name: datavizpro-flask
+    runtime: python3
+    rootDir: web
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 web_app:app
+    plan: free
 ```
 
-Open the URL displayed in terminal (usually `http://localhost:8501`)
+Push to GitHub, connect the repo in Render, and it will auto-deploy.
 
 ---
 
-## Run the Flask Web App
+## Quick Start
 
-```bash
-python web/flask_app.py
-```
-
-Open `http://localhost:5000` in your browser.
-
----
-
-## Run Both Simultaneously
-
-Open two terminals:
-
-```bash
-# Terminal 1: Streamlit
-streamlit run streamlitdashb/streamlit_app.py
-
-# Terminal 2: Flask
-python web/flask_app.py
-```
-
----
-
-## Notes
-
-- **Streamlit**: Real-time interactive dashboard, session-based data (cleared on refresh)
-- **Flask**: Traditional web app with server-side sessions, persistent during browser session
-- Choose based on your use case:
-  - **Streamlit** for rapid exploration and prototyping
-  - **Flask** for production-ready interface with persistent state
+1. Go to **Upload** and drop any CSV/Excel file, or load the built-in **sample sales dataset**
+2. Explore the **Auto Dashboard** for instant KPIs and charts
+3. Use **Chart Builder** to create custom visualizations
+4. Run **EDA & Statistics** for correlations, distributions, and hypothesis tests
+5. Try **Forecasting** for ARIMA time series predictions
+6. Use **Text Analytics** for sentiment analysis and word frequency on text columns
