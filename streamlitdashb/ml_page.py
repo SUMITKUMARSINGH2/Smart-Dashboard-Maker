@@ -12,6 +12,8 @@ PLOTLY_THEME = dict(
     font=dict(family="Space Grotesk", color="#E2E8F0"),
     margin=dict(l=20, r=20, t=40, b=20),
     colorway=["#00D4FF","#7C3AED","#FF006E","#10B981","#F59E0B","#EF4444"],
+    xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+    yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
 )
 
 def ml_insights():

@@ -12,6 +12,8 @@ PLOTLY_THEME = dict(
     font=dict(family="Inter", color="#E2E8F0"),
     margin=dict(l=20, r=20, t=50, b=20),
     colorway=["#818cf8", "#f472b6", "#4ade80", "#fbbf24", "#38bdf8", "#a855f7", "#f87171"],
+    xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+    yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
 )
 
 

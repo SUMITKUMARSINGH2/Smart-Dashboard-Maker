@@ -11,6 +11,8 @@ PLOTLY_THEME = dict(
     plot_bgcolor="rgba(13,21,40,1)",
     font=dict(family="Space Grotesk", color="#E2E8F0"),
     margin=dict(l=20, r=20, t=40, b=20),
+    xaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
+    yaxis=dict(gridcolor="#1E293B", zerolinecolor="#1E293B"),
 )
 
 COLOR_SEQ = ["#00D4FF","#7C3AED","#FF006E","#10B981","#F59E0B","#EF4444","#8B5CF6","#F97316","#06B6D4","#84CC16"]
